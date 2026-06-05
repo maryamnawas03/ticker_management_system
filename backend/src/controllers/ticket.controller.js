@@ -5,7 +5,7 @@ import asyncHandler from '../utils/asyncHandler.js';
 class TicketController {
   // Create a new ticket
   static createTicket = asyncHandler(async (req, res) => {
-    const result = await TicketService.createTicket(req.body, req.user._id, req.user.role);
+    const result = await TicketService.createTicket(req.body, req.user._id);
     return res.status(201).json(
       new ApiResponse(201, result, 'Ticket created successfully')
     );

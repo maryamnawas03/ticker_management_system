@@ -6,8 +6,8 @@ class TicketService {
   /**
    * Create a new ticket
    */
-  static async createTicket(data, userId, userRole) {
-    const { title, description, category, priority, assignedTo, status } = data;
+  static async createTicket(data, userId) {
+    const { title, description, category, priority } = data;
 
     if (!title || !description || !category) {
       const error = new Error('Title, description, and category are required');
@@ -16,19 +16,6 @@ class TicketService {
     }
 
     const ticketNumber = await generateTicketNumber();
-    const initialStatus = (userRole === 'Admin' && status) ? status : 'Open';
-
-    // Validate assignedTo agent if provided (Admin only)
-    let validatedAgentId = null;
-    if (userRole === 'Admin' && assignedTo) {
-      const agent = await User.findById(assignedTo);
-      if (!agent || agent.role !== 'Agent') {
-        const error = new Error('Assigned user must have the Agent role');
-        error.statusCode = 400;
-        throw error;
-      }
-      validatedAgentId = assignedTo;
-    }
 
     const ticket = await Ticket.create({
       ticketNumber,
@@ -36,12 +23,10 @@ class TicketService {
       description,
       category,
       priority: priority || 'Medium',
-      status: initialStatus,
-      assignedTo: validatedAgentId,
       createdBy: userId,
       statusHistory: [
         {
-          status: initialStatus,
+          status: 'Open',
           changedBy: userId,
           changedAt: new Date()
         }
