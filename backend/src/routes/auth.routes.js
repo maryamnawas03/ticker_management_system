@@ -1,15 +1,16 @@
 import express from 'express';
-import authController from '../controllers/auth.controller.js';
+import AuthController from '../controllers/auth.controller.js';
 import authMiddleware from '../middleware/auth.middleware.js';
+import validateBody from '../middleware/validate.middleware.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
 const router = express.Router();
 
-// Public routes
-router.post('/register', asyncHandler(authController.register));
-router.post('/login', asyncHandler(authController.login));
+// Public routes — validate required fields before hitting the controller
+router.post('/register', validateBody(['name', 'email', 'password']), asyncHandler(AuthController.register));
+router.post('/login', validateBody(['email', 'password']), asyncHandler(AuthController.login));
 
-// Protected route
-router.get('/me', authMiddleware, asyncHandler(authController.getCurrentUser));
+// Protected route — requires valid JWT
+router.get('/me', authMiddleware, asyncHandler(AuthController.getCurrentUser));
 
 export default router;

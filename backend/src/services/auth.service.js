@@ -17,6 +17,12 @@ class AuthService {
   }
 
   static async register(name, email, password) {
+    if (!name || !email || !password) {
+      const error = new Error('Name, email, and password are required');
+      error.statusCode = 400;
+      throw error;
+    }
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       const error = new Error('Email already registered');
@@ -27,14 +33,31 @@ class AuthService {
     const user = await User.create({ name, email, password });
     const token = this.generateToken(user._id);
 
-    return { user: user.toObject(), token };
+    // Never return password
+    const userObj = user.toObject();
+    delete userObj.password;
+
+    return { user: userObj, token };
   }
 
   static async login(email, password) {
+    if (!email || !password) {
+      const error = new Error('Email and password are required');
+      error.statusCode = 400;
+      throw error;
+    }
+
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
       const error = new Error('Invalid email or password');
       error.statusCode = 401;
+      throw error;
+    }
+
+    // Block inactive accounts
+    if (user.status === 'Inactive') {
+      const error = new Error('Your account has been deactivated. Please contact support.');
+      error.statusCode = 403;
       throw error;
     }
 
@@ -46,9 +69,10 @@ class AuthService {
     }
 
     const token = this.generateToken(user._id);
-    user.password = undefined;
+    const userObj = user.toObject();
+    delete userObj.password;
 
-    return { user: user.toObject(), token };
+    return { user: userObj, token };
   }
 
   static async getCurrentUser(userId) {

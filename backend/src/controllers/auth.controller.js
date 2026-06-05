@@ -14,14 +14,6 @@ import ApiResponse from '../utils/apiResponse.js';
 class AuthController {
   static async register(req, res, next) {
     const { name, email, password } = req.body;
-
-    // Basic validation
-    if (!name || !email || !password) {
-      return res.status(400).json(
-        new ApiResponse(400, null, 'Name, email, and password are required')
-      );
-    }
-
     const result = await AuthService.register(name, email, password);
     return res.status(201).json(
       new ApiResponse(201, result, 'User registered successfully')
@@ -30,13 +22,6 @@ class AuthController {
 
   static async login(req, res, next) {
     const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json(
-        new ApiResponse(400, null, 'Email and password are required')
-      );
-    }
-
     const result = await AuthService.login(email, password);
     return res.status(200).json(
       new ApiResponse(200, result, 'Login successful')
