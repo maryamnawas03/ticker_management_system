@@ -16,12 +16,12 @@ import Loader from '../components/common/Loader';
  */
 
 const statCards = [
-  { key: 'total',      label: 'Total Tickets',       icon: '🎫', color: '#6366f1' },
-  { key: 'open',       label: 'Open',                icon: '📂', color: '#6366f1' },
-  { key: 'inProgress', label: 'In Progress',         icon: '⚙️',  color: '#eab308' },
-  { key: 'resolved',   label: 'Resolved',            icon: '✅',  color: '#22c55e' },
-  { key: 'closed',     label: 'Closed',              icon: '🔒',  color: '#94a3b8' },
-  { key: 'urgent',     label: 'Urgent',              icon: '🚨',  color: '#ef4444' },
+  { key: 'total',      label: 'Total Tickets',       icon: 'confirmation_number', color: '#6366f1' },
+  { key: 'open',       label: 'Open',                icon: 'folder_open',          color: '#6366f1' },
+  { key: 'inProgress', label: 'In Progress',         icon: 'sync',                 color: '#eab308' },
+  { key: 'resolved',   label: 'Resolved',            icon: 'check_circle',         color: '#22c55e' },
+  { key: 'closed',     label: 'Closed',              icon: 'lock',                 color: '#94a3b8' },
+  { key: 'urgent',     label: 'Urgent',              icon: 'error',                color: '#ef4444' },
 ];
 
 const Dashboard = () => {
@@ -39,8 +39,10 @@ const Dashboard = () => {
     <div className="dashboard-page">
       {/* Welcome banner */}
       <div className="dashboard-welcome">
-        <h2 className="welcome-title">
-          Welcome back, <span className="welcome-name">{user?.name}</span> 👋
+        <h2 className="welcome-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span>Welcome back,</span>
+          <span className="welcome-name">{user?.name}</span>
+          <span className="material-icons" style={{ color: '#fbbf24', fontSize: 24 }}>waving_hand</span>
         </h2>
         <p className="welcome-sub">
           Here&apos;s a snapshot of your {user?.role === 'Admin' ? 'system' : user?.role === 'Agent' ? 'assigned work' : 'tickets'}.
@@ -54,7 +56,7 @@ const Dashboard = () => {
         <div className="stats-grid">
           {statCards.map((card) => (
             <div key={card.key} className="stat-card">
-              <div className="stat-icon" style={{ color: card.color }}>{card.icon}</div>
+              <div className="material-icons stat-icon" style={{ color: card.color }}>{card.icon}</div>
               <div className="stat-info">
                 <p className="stat-value" style={{ color: card.color }}>
                   {stats[card.key] ?? 0}
@@ -72,17 +74,17 @@ const Dashboard = () => {
         <div className="actions-grid">
           {user?.role !== 'Admin' && (
             <a href="/tickets/new" className="action-card">
-              <span className="action-icon">＋</span>
+              <span className="material-icons action-icon">add</span>
               <span>Create Ticket</span>
             </a>
           )}
           <a href="/tickets" className="action-card">
-            <span className="action-icon">🎫</span>
+            <span className="material-icons action-icon">confirmation_number</span>
             <span>{user?.role === 'Admin' ? 'All Tickets' : user?.role === 'Agent' ? 'Assigned Tickets' : 'My Tickets'}</span>
           </a>
           {user?.role === 'Admin' && (
             <a href="/users" className="action-card">
-              <span className="action-icon">👥</span>
+              <span className="material-icons action-icon">people</span>
               <span>Manage Users</span>
             </a>
           )}

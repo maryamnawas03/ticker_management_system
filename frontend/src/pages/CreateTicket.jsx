@@ -64,8 +64,9 @@ const CreateTicket = () => {
           </p>
         </div>
         <button onClick={() => navigate('/tickets')} className="logout-btn"
-          style={{ width: 'auto', padding: '8px 16px' }}>
-          Back to List
+          style={{ width: 'auto', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span className="material-icons" style={{ fontSize: 16 }}>arrow_back</span>
+          <span>Back to List</span>
         </button>
       </div>
 

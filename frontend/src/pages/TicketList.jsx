@@ -100,9 +100,10 @@ const TicketList = () => {
           <button
             onClick={() => navigate('/tickets/new')}
             className="auth-btn"
-            style={{ width: 'auto', padding: '10px 20px', marginTop: 0 }}
+            style={{ width: 'auto', padding: '10px 20px', marginTop: 0, display: 'flex', alignItems: 'center', gap: 6 }}
           >
-            + Create Ticket
+            <span className="material-icons" style={{ fontSize: 18 }}>add</span>
+            <span>Create Ticket</span>
           </button>
         )}
       </div>
@@ -215,7 +216,7 @@ const TicketList = () => {
             textAlign: 'center'
           }}
         >
-          <span style={{ fontSize: 48, marginBottom: 16, display: 'block' }}>🎟️</span>
+          <span className="material-icons" style={{ fontSize: 48, marginBottom: 16, display: 'block', color: 'var(--text-muted)' }}>confirmation_number</span>
           <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>No tickets found</h3>
           <p style={{ fontSize: 14, color: 'var(--text-muted)', maxWidth: 400, margin: '0 auto' }}>
             There are no support tickets matching your selection. Try clearing filters or creating a new ticket.

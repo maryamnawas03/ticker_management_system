@@ -12,20 +12,20 @@ import { logout } from '../../features/auth/authSlice';
  */
 
 const adminNav = [
-  { path: '/dashboard',   label: 'Dashboard',         icon: '◈' },
-  { path: '/tickets',     label: 'Ticket Management', icon: '🎫' },
-  { path: '/users',       label: 'User Management',   icon: '👥' },
+  { path: '/dashboard',   label: 'Dashboard',         icon: 'dashboard' },
+  { path: '/tickets',     label: 'Ticket Management', icon: 'confirmation_number' },
+  { path: '/users',       label: 'User Management',   icon: 'people' },
 ];
 
 const agentNav = [
-  { path: '/dashboard',   label: 'Dashboard',         icon: '◈' },
-  { path: '/tickets',     label: 'Assigned Tickets',  icon: '🎫' },
+  { path: '/dashboard',   label: 'Dashboard',         icon: 'dashboard' },
+  { path: '/tickets',     label: 'Assigned Tickets',  icon: 'confirmation_number' },
 ];
 
 const userNav = [
-  { path: '/dashboard',   label: 'Dashboard',         icon: '◈' },
-  { path: '/tickets',     label: 'My Tickets',        icon: '🎫' },
-  { path: '/tickets/new', label: 'Create Ticket',     icon: '＋' },
+  { path: '/dashboard',   label: 'Dashboard',         icon: 'dashboard' },
+  { path: '/tickets',     label: 'My Tickets',        icon: 'confirmation_number' },
+  { path: '/tickets/new', label: 'Create Ticket',     icon: 'add' },
 ];
 
 const navByRole = { Admin: adminNav, Agent: agentNav, User: userNav };
@@ -44,8 +44,8 @@ const Sidebar = () => {
   return (
     <aside className="sidebar">
       {/* Brand */}
-      <div className="sidebar-brand">
-        <span className="brand-icon">⚡</span>
+      <div className="sidebar-brand" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span className="material-icons brand-icon" style={{ color: '#f59e0b', fontSize: 24 }}>bolt</span>
         <span className="brand-name">TicketFlow</span>
       </div>
 
@@ -66,7 +66,7 @@ const Sidebar = () => {
               `sidebar-link${isActive ? ' sidebar-link--active' : ''}`
             }
           >
-            <span className="nav-icon" aria-hidden="true">{item.icon}</span>
+            <span className="material-icons nav-icon" aria-hidden="true" style={{ fontSize: 20 }}>{item.icon}</span>
             <span>{item.label}</span>
           </NavLink>
         ))}
@@ -88,8 +88,10 @@ const Sidebar = () => {
           className="logout-btn"
           onClick={handleLogout}
           aria-label="Log out"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
         >
-          <span aria-hidden="true">⏻</span> Logout
+          <span className="material-icons" style={{ fontSize: 16 }}>power_settings_new</span>
+          <span>Logout</span>
         </button>
       </div>
     </aside>

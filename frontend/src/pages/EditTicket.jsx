@@ -107,8 +107,9 @@ const EditTicket = () => {
           </p>
         </div>
         <button onClick={() => navigate(`/tickets/${id}`)} className="logout-btn"
-          style={{ width: 'auto', padding: '8px 16px' }}>
-          ← Back to Ticket
+          style={{ width: 'auto', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span className="material-icons" style={{ fontSize: 16 }}>arrow_back</span>
+          <span>Back to Ticket</span>
         </button>
       </div>
 
@@ -179,9 +180,16 @@ const EditTicket = () => {
             Cancel
           </button>
           <button type="submit" className="auth-btn"
-            style={{ width: 'auto', padding: '10px 28px', marginTop: 0 }}
+            style={{ width: 'auto', padding: '10px 28px', marginTop: 0, display: 'flex', alignItems: 'center', gap: 6 }}
             disabled={busy}>
-            {busy ? 'Saving…' : '💾 Save Changes'}
+            {busy ? (
+              'Saving…'
+            ) : (
+              <>
+                <span className="material-icons" style={{ fontSize: 18 }}>save</span>
+                <span>Save Changes</span>
+              </>
+            )}
           </button>
         </div>
       </form>

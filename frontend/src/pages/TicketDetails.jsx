@@ -165,9 +165,10 @@ const TicketDetails = () => {
         <button
           onClick={() => navigate('/tickets')}
           className="logout-btn"
-          style={{ width: 'auto', padding: '8px 16px' }}
+          style={{ width: 'auto', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 6 }}
         >
-          ← Back to Tickets
+          <span className="material-icons" style={{ fontSize: 16 }}>arrow_back</span>
+          <span>Back to Tickets</span>
         </button>
 
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
@@ -177,9 +178,16 @@ const TicketDetails = () => {
               onClick={handleSaveChanges}
               disabled={saveLoading || !hasChanges}
               className="auth-btn"
-              style={{ width: 'auto', padding: '8px 20px', marginTop: 0 }}
+              style={{ width: 'auto', padding: '8px 20px', marginTop: 0, display: 'flex', alignItems: 'center', gap: 6 }}
             >
-              {saveLoading ? 'Saving...' : '💾 Save Changes'}
+              {saveLoading ? (
+                'Saving...'
+              ) : (
+                <>
+                  <span className="material-icons" style={{ fontSize: 18 }}>save</span>
+                  <span>Save Changes</span>
+                </>
+              )}
             </button>
           )}
 
