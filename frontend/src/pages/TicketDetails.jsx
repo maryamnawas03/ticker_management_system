@@ -33,6 +33,13 @@ const TicketDetails = () => {
   const [saveLoading, setSaveLoading]       = useState(false);
   const [saved, setSaved]                   = useState(false);
 
+  const hasChanges = 
+    ticket && (
+      selectedStatus !== (ticket.status || 'Open') ||
+      (user?.role === 'Admin' && selectedAgent !== (ticket.assignedTo?._id || '')) ||
+      commentText.trim() !== ''
+    );
+
   // Fetch ticket details on mount/ID change
   useEffect(() => {
     dispatch(fetchTicketById(id));
@@ -41,14 +48,14 @@ const TicketDetails = () => {
     };
   }, [dispatch, id]);
 
-  // Sync local state when ticket loads
+  // Sync local state when ticket loads or updates
   useEffect(() => {
     if (ticket) {
       setSelectedStatus(ticket.status || 'Open');
       setSelectedAgent(ticket.assignedTo?._id || '');
       setSaved(false);
     }
-  }, [ticket?._id]);
+  }, [ticket?._id, ticket?.status, ticket?.assignedTo?._id]);
 
   // Fetch agents list if current user is Admin
   useEffect(() => {
@@ -59,35 +66,48 @@ const TicketDetails = () => {
     }
   }, [user]);
 
-  // Save status + agent then redirect to ticket list
-  const handleSaveChanges = async () => {
+  // Save status, agent, and comment
+  const handleSaveAllChanges = async (shouldRedirect) => {
     setSaveLoading(true);
     try {
       const promises = [];
       if (selectedStatus !== ticket.status) {
         promises.push(dispatch(updateTicketStatus({ id, status: selectedStatus })).unwrap());
       }
-      if (selectedAgent !== (ticket.assignedTo?._id || '')) {
+      if (user?.role === 'Admin' && selectedAgent !== (ticket.assignedTo?._id || '')) {
         promises.push(dispatch(assignTicket({ id, agentId: selectedAgent || null })).unwrap());
       }
+      if (commentText.trim()) {
+        promises.push(dispatch(addComment({ id, message: commentText })).unwrap());
+      }
       await Promise.all(promises);
-      navigate('/tickets');
+      
+      if (commentText.trim()) {
+        setCommentText('');
+      }
+
+      if (shouldRedirect) {
+        navigate('/tickets');
+      } else {
+        dispatch(fetchTicketById(id));
+      }
     } catch {
       setSaveLoading(false);
+    } finally {
+      if (!shouldRedirect) {
+        setSaveLoading(false);
+      }
     }
   };
 
-  // Agent-only status update (still immediate since they have one control)
-  const handleAgentStatusChange = (newStatus) => {
-    dispatch(updateTicketStatus({ id, status: newStatus }));
+  const handleSaveChanges = () => {
+    handleSaveAllChanges(true);
   };
 
   const handleCommentSubmit = (e) => {
     e.preventDefault();
     if (!commentText.trim()) return;
-    dispatch(addComment({ id, message: commentText }))
-      .unwrap()
-      .then(() => setCommentText(''));
+    handleSaveAllChanges(false);
   };
 
   const handleDeleteTicket = () => {
@@ -143,27 +163,41 @@ const TicketDetails = () => {
           ← Back to Tickets
         </button>
 
-        {/* Delete actions (Admin or Creator when Open) */}
-        {(user.role === 'Admin' || (user.role === 'User' && isCreator && ticket.status === 'Open')) && (
-          <button
-            onClick={handleDeleteTicket}
-            style={{
-              padding: '8px 16px',
-              background: 'var(--danger-muted)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              borderRadius: 'var(--radius-md)',
-              color: '#fca5a5',
-              fontSize: 13,
-              fontWeight: 500,
-              cursor: 'pointer',
-              transition: 'background var(--transition)'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.2)'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--danger-muted)'}
-          >
-            Delete Ticket
-          </button>
-        )}
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          {/* Save Changes button */}
+          {(user.role === 'Admin' || isAssignedAgent || isCreator) && (
+            <button
+              onClick={handleSaveChanges}
+              disabled={saveLoading || !hasChanges}
+              className="auth-btn"
+              style={{ width: 'auto', padding: '8px 20px', marginTop: 0 }}
+            >
+              {saveLoading ? 'Saving...' : '💾 Save Changes'}
+            </button>
+          )}
+
+          {/* Delete actions (Admin or Creator when Open) */}
+          {(user.role === 'Admin' || (user.role === 'User' && isCreator && ticket.status === 'Open')) && (
+            <button
+              onClick={handleDeleteTicket}
+              style={{
+                padding: '8px 16px',
+                background: 'var(--danger-muted)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                borderRadius: 'var(--radius-md)',
+                color: '#fca5a5',
+                fontSize: 13,
+                fontWeight: 500,
+                cursor: 'pointer',
+                transition: 'background var(--transition)'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.2)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--danger-muted)'}
+            >
+              Delete Ticket
+            </button>
+          )}
+        </div>
       </div>
 
       {error && <ErrorMessage message={error} />}
@@ -361,15 +395,16 @@ const TicketDetails = () => {
               </select>
             )}
 
-            {/* Agent — still immediate (agents only control their own ticket status) */}
+            {/* Agent — local dropdown, saved via Save Changes */}
             {user.role === 'Agent' && (
               isAssignedAgent ? (
                 <select
                   className="field-input"
-                  value={ticket.status}
-                  onChange={(e) => handleAgentStatusChange(e.target.value)}
+                  value={selectedStatus}
+                  onChange={(e) => { setSelectedStatus(e.target.value); setSaved(false); }}
                   style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-raised)' }}
                 >
+                  {selectedStatus === 'Open' && <option value="Open">Open</option>}
                   <option value="In Progress">In Progress</option>
                   <option value="Resolved">Resolved</option>
                   <option value="Closed">Closed</option>
@@ -384,13 +419,26 @@ const TicketDetails = () => {
             {/* User — close their own ticket */}
             {user.role === 'User' && (
               isCreator && ticket.status !== 'Closed' ? (
-                <button
-                  onClick={() => dispatch(updateTicketStatus({ id, status: 'Closed' }))}
-                  className="logout-btn"
-                  style={{ width: '100%', padding: '8px 12px' }}
-                >
-                  Close Ticket
-                </button>
+                selectedStatus === 'Closed' ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Status marked as Closed</span>
+                    <button
+                      onClick={() => setSelectedStatus(ticket.status)}
+                      className="logout-btn"
+                      style={{ width: '100%', padding: '6px 12px', fontSize: 12 }}
+                    >
+                      Undo Close
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => { setSelectedStatus('Closed'); setSaved(false); }}
+                    className="logout-btn"
+                    style={{ width: '100%', padding: '8px 12px' }}
+                  >
+                    Close Ticket
+                  </button>
+                )
               ) : (
                 <p style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic' }}>
                   {ticket.status === 'Closed' ? 'Ticket is closed.' : 'You can close this ticket once resolved.'}
@@ -431,16 +479,6 @@ const TicketDetails = () => {
                 <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>
                   Assigning an agent automatically transitions an Open ticket to In Progress.
                 </p>
-
-                {/* Save Changes button — Admin only */}
-                <button
-                  onClick={handleSaveChanges}
-                  disabled={saveLoading}
-                  className="auth-btn"
-                  style={{ width: '100%', padding: '10px 16px', marginTop: 4 }}
-                >
-                  {saveLoading ? 'Saving…' : '💾 Save Changes'}
-                </button>
               </div>
             ) : (
               <div>
