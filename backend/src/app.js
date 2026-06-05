@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
+import ticketRoutes from './routes/ticket.routes.js';
 import errorMiddleware from './middleware/error.middleware.js';
 
 const app = express();
@@ -29,6 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/tickets', ticketRoutes);
 
 // ── Health Check ──────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
