@@ -1,48 +1,72 @@
-import { useEffect, useState } from 'react'
-import './App.css'
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCurrentUser } from './features/auth/authSlice';
 
-function App() {
-  const [apiStatus, setApiStatus] = useState('checking')
-  const [error, setError] = useState(null)
+// Layout
+import MainLayout from './components/layout/MainLayout';
 
+// Route guards
+import ProtectedRoute from './routes/ProtectedRoute';
+import RoleRoute from './routes/RoleRoute';
+
+// Pages
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+
+// Placeholder pages — built on Day 3–6
+const TicketList     = () => <div className="page-placeholder"><h2>Ticket List</h2><p>Coming Day 3</p></div>;
+const CreateTicket   = () => <div className="page-placeholder"><h2>Create Ticket</h2><p>Coming Day 3</p></div>;
+const TicketDetails  = () => <div className="page-placeholder"><h2>Ticket Details</h2><p>Coming Day 3</p></div>;
+const EditTicket     = () => <div className="page-placeholder"><h2>Edit Ticket</h2><p>Coming Day 4</p></div>;
+const UserManagement = () => <div className="page-placeholder"><h2>User Management</h2><p>Coming Day 6</p></div>;
+const NotFound       = () => <div className="page-placeholder"><h2>404 — Page not found</h2></div>;
+
+const App = () => {
+  const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.auth);
+
+  // On mount — if a token exists in localStorage, fetch current user to
+  // restore the session without requiring a re-login after page refresh
   useEffect(() => {
-    checkApiHealth()
-  }, [])
-
-  const checkApiHealth = async () => {
-    try {
-      const response = await fetch(import.meta.env.VITE_API_BASE_URL.replace('/api', '/api/health'))
-      if (response.ok) {
-        setApiStatus('connected')
-      } else {
-        setApiStatus('error')
-        setError('API returned status: ' + response.status)
-      }
-    } catch (err) {
-      setApiStatus('error')
-      setError(err.message)
-    }
-  }
+    if (token) dispatch(fetchCurrentUser());
+  }, [dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>Ticket Management System</h1>
-      <div style={{ marginTop: '1rem', fontSize: '18px' }}>
-        <strong>API Status: </strong>
-        <span style={{
-          color: apiStatus === 'connected' ? 'green' : apiStatus === 'checking' ? 'orange' : 'red'
-        }}>
-          {apiStatus === 'connected' && '✓ Connected'}
-          {apiStatus === 'checking' && '⏳ Checking...'}
-          {apiStatus === 'error' && `✗ ${error}`}
-        </span>
-      </div>
-      <div style={{ marginTop: '2rem', color: '#666' }}>
-        <p>Frontend is running on port 5173</p>
-        <p>API URL: {import.meta.env.VITE_API_BASE_URL}</p>
-      </div>
-    </div>
-  )
-}
+    <BrowserRouter>
+      <Routes>
+        {/* ── Public routes ─────────────────────────────────────── */}
+        <Route path="/login"    element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-export default App
+        {/* ── Protected routes (requires valid JWT) ─────────────── */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<MainLayout />}>
+
+            {/* Dashboard — all roles */}
+            <Route path="/dashboard" element={<Dashboard />} />
+
+            {/* Tickets — all roles (content filtered server-side) */}
+            <Route path="/tickets"        element={<TicketList />} />
+            <Route path="/tickets/new"    element={<CreateTicket />} />
+            <Route path="/tickets/:id"    element={<TicketDetails />} />
+            <Route path="/tickets/:id/edit" element={<EditTicket />} />
+
+            {/* Admin-only routes */}
+            <Route element={<RoleRoute allowedRoles={['Admin']} />}>
+              <Route path="/users" element={<UserManagement />} />
+            </Route>
+
+          </Route>
+        </Route>
+
+        {/* ── Default redirects ──────────────────────────────────── */}
+        <Route path="/"   element={<Navigate to="/dashboard" replace />} />
+        <Route path="*"   element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
+
+export default App;
