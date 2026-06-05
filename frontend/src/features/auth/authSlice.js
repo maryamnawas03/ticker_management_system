@@ -50,7 +50,7 @@ const initialState = {
   token: localStorage.getItem('token') || null,
   isLoading: false,
   error: null,
-  isInitialized: false, // true after fetchCurrentUser resolves
+  isInitialized: !localStorage.getItem('token'), // true after fetchCurrentUser resolves
 };
 
 // ── Slice ─────────────────────────────────────────────────────────────────────
