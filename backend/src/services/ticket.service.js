@@ -6,8 +6,8 @@ class TicketService {
   /**
    * Create a new ticket
    */
-  static async createTicket(data, userId) {
-    const { title, description, category, priority } = data;
+  static async createTicket(data, userId, userRole) {
+    const { title, description, category, priority, assignedTo, status } = data;
 
     if (!title || !description || !category) {
       const error = new Error('Title, description, and category are required');
@@ -16,6 +16,19 @@ class TicketService {
     }
 
     const ticketNumber = await generateTicketNumber();
+    const initialStatus = (userRole === 'Admin' && status) ? status : 'Open';
+
+    // Validate assignedTo agent if provided (Admin only)
+    let validatedAgentId = null;
+    if (userRole === 'Admin' && assignedTo) {
+      const agent = await User.findById(assignedTo);
+      if (!agent || agent.role !== 'Agent') {
+        const error = new Error('Assigned user must have the Agent role');
+        error.statusCode = 400;
+        throw error;
+      }
+      validatedAgentId = assignedTo;
+    }
 
     const ticket = await Ticket.create({
       ticketNumber,
@@ -23,10 +36,12 @@ class TicketService {
       description,
       category,
       priority: priority || 'Medium',
+      status: initialStatus,
+      assignedTo: validatedAgentId,
       createdBy: userId,
       statusHistory: [
         {
-          status: 'Open',
+          status: initialStatus,
           changedBy: userId,
           changedAt: new Date()
         }
@@ -123,7 +138,7 @@ class TicketService {
   }
 
   /**
-   * Update ticket (Admin or Creator-when-Open only)
+   * Update ticket — Admin can update all fields; User can edit own Open tickets
    */
   static async updateTicket(id, data, user) {
     const ticket = await Ticket.findById(id);
@@ -154,13 +169,42 @@ class TicketService {
       }
     }
 
-    // Update fields
-    const { title, description, category, priority } = data;
+    // Update core fields
+    const { title, description, category, priority, assignedTo, status } = data;
     if (title) ticket.title = title;
     if (description) ticket.description = description;
     if (category) ticket.category = category;
-    if (priority && (user.role === 'Admin' || ticket.status === 'Open')) {
-      ticket.priority = priority;
+    if (priority) ticket.priority = priority;
+
+    // Admin-only: update agent assignment
+    if (user.role === 'Admin' && assignedTo !== undefined) {
+      if (assignedTo === null || assignedTo === '') {
+        ticket.assignedTo = null;
+      } else {
+        const agent = await User.findById(assignedTo);
+        if (!agent || agent.role !== 'Agent') {
+          const error = new Error('Assigned user must have the Agent role');
+          error.statusCode = 400;
+          throw error;
+        }
+        ticket.assignedTo = assignedTo;
+      }
+    }
+
+    // Admin-only: update status with audit trail
+    if (user.role === 'Admin' && status && status !== ticket.status) {
+      const validStatuses = ['Open', 'In Progress', 'Resolved', 'Closed'];
+      if (!validStatuses.includes(status)) {
+        const error = new Error('Invalid status value');
+        error.statusCode = 400;
+        throw error;
+      }
+      ticket.status = status;
+      ticket.statusHistory.push({
+        status,
+        changedBy: user._id,
+        changedAt: new Date()
+      });
     }
 
     await ticket.save();
