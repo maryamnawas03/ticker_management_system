@@ -69,6 +69,14 @@ class TicketController {
       new ApiResponse(201, result, 'Comment added successfully')
     );
   });
+
+  // Delete comment
+  static deleteComment = asyncHandler(async (req, res) => {
+    const result = await TicketService.deleteComment(req.params.id, req.params.commentId, req.user);
+    return res.status(200).json(
+      new ApiResponse(200, result, 'Comment deleted successfully')
+    );
+  });
 }
 
 export default TicketController;

@@ -8,6 +8,7 @@ import {
   updateTicketStatusRequest,
   assignTicketRequest,
   addCommentRequest,
+  deleteCommentRequest,
 } from '../../api/ticketApi';
 
 // ── Async Thunks ──────────────────────────────────────────────────────────────
@@ -104,6 +105,18 @@ export const addComment = createAsyncThunk(
       return data;
     } catch (err) {
       return rejectWithValue(err.message || 'Failed to add comment');
+    }
+  }
+);
+
+export const deleteComment = createAsyncThunk(
+  'tickets/deleteComment',
+  async ({ id, commentId }, { rejectWithValue }) => {
+    try {
+      const data = await deleteCommentRequest(id, commentId);
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.message || 'Failed to delete comment');
     }
   }
 );
@@ -227,6 +240,20 @@ const ticketSlice = createSlice({
         state.ticket = action.payload;
       })
       .addCase(addComment.rejected, (state, action) => {
+        state.commentLoading = false;
+        state.error = action.payload;
+      })
+
+      // ── Delete Comment ──────────────────────────────────────
+      .addCase(deleteComment.pending, (state) => {
+        state.commentLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteComment.fulfilled, (state, action) => {
+        state.commentLoading = false;
+        state.ticket = action.payload;
+      })
+      .addCase(deleteComment.rejected, (state, action) => {
         state.commentLoading = false;
         state.error = action.payload;
       });

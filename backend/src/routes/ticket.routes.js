@@ -33,4 +33,7 @@ router.patch('/:id/assign', roleMiddleware(['Admin']), TicketController.assignTi
 // POST /api/tickets/:id/comments - Add a comment
 router.post('/:id/comments', validateBody(['message']), TicketController.addComment);
 
+// DELETE /api/tickets/:id/comments/:commentId - Delete a comment
+router.delete('/:id/comments/:commentId', TicketController.deleteComment);
+
 export default router;

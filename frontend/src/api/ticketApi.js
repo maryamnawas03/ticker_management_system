@@ -24,3 +24,6 @@ export const assignTicketRequest = (id, agentId) =>
 
 export const addCommentRequest = (id, message) =>
   api.post(`/tickets/${id}/comments`, { message });
+
+export const deleteCommentRequest = (id, commentId) =>
+  api.delete(`/tickets/${id}/comments/${commentId}`);

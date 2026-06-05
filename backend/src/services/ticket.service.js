@@ -377,6 +377,36 @@ class TicketService {
     await ticket.save();
     return this.getTicketById(ticket._id, user);
   }
+
+  /**
+   * Delete a comment from a ticket
+   */
+  static async deleteComment(ticketId, commentId, user) {
+    const ticket = await Ticket.findById(ticketId);
+    if (!ticket) {
+      const error = new Error('Ticket not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const comment = ticket.comments.id(commentId);
+    if (!comment) {
+      const error = new Error('Comment not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // Only Admin or the comment creator can delete it
+    if (user.role !== 'Admin' && comment.user.toString() !== user._id.toString()) {
+      const error = new Error('Unauthorized to delete this comment');
+      error.statusCode = 403;
+      throw error;
+    }
+
+    ticket.comments.pull(commentId);
+    await ticket.save();
+    return this.getTicketById(ticket._id, user);
+  }
 }
 
 export default TicketService;
