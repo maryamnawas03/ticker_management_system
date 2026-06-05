@@ -27,6 +27,12 @@ const TicketDetails = () => {
   const [agents, setAgents] = useState([]);
   const [assignError, setAssignError] = useState(null);
 
+  // Local state for sidebar controls — not auto-saved
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedAgent, setSelectedAgent]   = useState('');
+  const [saveLoading, setSaveLoading]       = useState(false);
+  const [saved, setSaved]                   = useState(false);
+
   // Fetch ticket details on mount/ID change
   useEffect(() => {
     dispatch(fetchTicketById(id));
@@ -35,25 +41,45 @@ const TicketDetails = () => {
     };
   }, [dispatch, id]);
 
+  // Sync local state when ticket loads
+  useEffect(() => {
+    if (ticket) {
+      setSelectedStatus(ticket.status || 'Open');
+      setSelectedAgent(ticket.assignedTo?._id || '');
+      setSaved(false);
+    }
+  }, [ticket?._id]);
+
   // Fetch agents list if current user is Admin
   useEffect(() => {
     if (user?.role === 'Admin') {
       getAgentsRequest()
-        .then((data) => {
-          setAgents(data);
-        })
-        .catch((err) => {
-          setAssignError('Failed to load agents for assignment.');
-        });
+        .then(setAgents)
+        .catch(() => setAssignError('Failed to load agents for assignment.'));
     }
   }, [user]);
 
-  const handleStatusChange = (newStatus) => {
-    dispatch(updateTicketStatus({ id, status: newStatus }));
+  // Save status + agent then redirect to ticket list
+  const handleSaveChanges = async () => {
+    setSaveLoading(true);
+    try {
+      const promises = [];
+      if (selectedStatus !== ticket.status) {
+        promises.push(dispatch(updateTicketStatus({ id, status: selectedStatus })).unwrap());
+      }
+      if (selectedAgent !== (ticket.assignedTo?._id || '')) {
+        promises.push(dispatch(assignTicket({ id, agentId: selectedAgent || null })).unwrap());
+      }
+      await Promise.all(promises);
+      navigate('/tickets');
+    } catch {
+      setSaveLoading(false);
+    }
   };
 
-  const handleAssignChange = (agentId) => {
-    dispatch(assignTicket({ id, agentId: agentId || null }));
+  // Agent-only status update (still immediate since they have one control)
+  const handleAgentStatusChange = (newStatus) => {
+    dispatch(updateTicketStatus({ id, status: newStatus }));
   };
 
   const handleCommentSubmit = (e) => {
@@ -317,15 +343,15 @@ const TicketDetails = () => {
 
             {/* Status Transition Actions */}
             <hr style={{ border: 'none', height: 1, background: 'var(--border)', margin: '20px 0' }} />
-            
+
             <h5 style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600, marginBottom: 10 }}>Update Status</h5>
-            
-            {/* Admin status updates */}
+
+            {/* Admin — local dropdown, saved via Save Changes */}
             {user.role === 'Admin' && (
               <select
                 className="field-input"
-                value={ticket.status}
-                onChange={(e) => handleStatusChange(e.target.value)}
+                value={selectedStatus}
+                onChange={(e) => { setSelectedStatus(e.target.value); setSaved(false); }}
                 style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-raised)' }}
               >
                 <option value="Open">Open</option>
@@ -335,13 +361,13 @@ const TicketDetails = () => {
               </select>
             )}
 
-            {/* Agent status updates (only for assigned agent) */}
+            {/* Agent — still immediate (agents only control their own ticket status) */}
             {user.role === 'Agent' && (
               isAssignedAgent ? (
                 <select
                   className="field-input"
                   value={ticket.status}
-                  onChange={(e) => handleStatusChange(e.target.value)}
+                  onChange={(e) => handleAgentStatusChange(e.target.value)}
                   style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-raised)' }}
                 >
                   <option value="In Progress">In Progress</option>
@@ -355,11 +381,11 @@ const TicketDetails = () => {
               )
             )}
 
-            {/* User status updates (only close own ticket) */}
+            {/* User — close their own ticket */}
             {user.role === 'User' && (
               isCreator && ticket.status !== 'Closed' ? (
                 <button
-                  onClick={() => handleStatusChange('Closed')}
+                  onClick={() => dispatch(updateTicketStatus({ id, status: 'Closed' }))}
                   className="logout-btn"
                   style={{ width: '100%', padding: '8px 12px' }}
                 >
@@ -391,11 +417,11 @@ const TicketDetails = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <select
                   className="field-input"
-                  value={ticket.assignedTo?._id || ''}
-                  onChange={(e) => handleAssignChange(e.target.value)}
+                  value={selectedAgent}
+                  onChange={(e) => { setSelectedAgent(e.target.value); setSaved(false); }}
                   style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-raised)' }}
                 >
-                  <option value="">Unassigned</option>
+                  <option value="">— Unassigned —</option>
                   {agents.map((agent) => (
                     <option key={agent._id} value={agent._id}>
                       {agent.name}
@@ -405,6 +431,16 @@ const TicketDetails = () => {
                 <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>
                   Assigning an agent automatically transitions an Open ticket to In Progress.
                 </p>
+
+                {/* Save Changes button — Admin only */}
+                <button
+                  onClick={handleSaveChanges}
+                  disabled={saveLoading}
+                  className="auth-btn"
+                  style={{ width: '100%', padding: '10px 16px', marginTop: 4 }}
+                >
+                  {saveLoading ? 'Saving…' : '💾 Save Changes'}
+                </button>
               </div>
             ) : (
               <div>
