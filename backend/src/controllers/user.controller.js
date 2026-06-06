@@ -84,6 +84,17 @@ class UserController {
       new ApiResponse(201, user, 'User created successfully')
     );
   }
+
+  /**
+   * DELETE /api/users/:id
+   * Delete a user (Admin only)
+   */
+  static async deleteUser(req, res) {
+    await UserService.deleteUser(req.params.id, req.user._id);
+    return res.status(200).json(
+      new ApiResponse(200, null, 'User deleted successfully')
+    );
+  }
 }
 
 export default UserController;

@@ -75,6 +75,51 @@ const Dashboard = () => {
         </div>
       )}
 
+      {/* User Stats Grid (Admin only) */}
+      {!isLoading && user?.role === 'Admin' && counts.userStats && (
+        <div style={{ marginTop: 28, marginBottom: 12 }}>
+          <h3 className="actions-title" style={{ marginBottom: 16 }}>User Account Statistics</h3>
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="material-icons stat-icon" style={{ color: '#6366f1' }}>people</div>
+              <div className="stat-info">
+                <p className="stat-value" style={{ color: '#6366f1' }}>
+                  {counts.userStats.totalUsers ?? 0}
+                </p>
+                <p className="stat-label">Total Registered</p>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="material-icons stat-icon" style={{ color: '#ef4444' }}>shield</div>
+              <div className="stat-info">
+                <p className="stat-value" style={{ color: '#ef4444' }}>
+                  {counts.userStats.admins ?? 0}
+                </p>
+                <p className="stat-label">Administrators</p>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="material-icons stat-icon" style={{ color: '#eab308' }}>support_agent</div>
+              <div className="stat-info">
+                <p className="stat-value" style={{ color: '#eab308' }}>
+                  {counts.userStats.agents ?? 0}
+                </p>
+                <p className="stat-label">Support Agents</p>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="material-icons stat-icon" style={{ color: '#3b82f6' }}>person</div>
+              <div className="stat-info">
+                <p className="stat-value" style={{ color: '#3b82f6' }}>
+                  {counts.userStats.users ?? 0}
+                </p>
+                <p className="stat-label">Regular Clients</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Quick actions */}
       <div className="dashboard-actions">
         <h3 className="actions-title">Quick Actions</h3>

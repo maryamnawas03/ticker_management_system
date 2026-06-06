@@ -1,9 +1,10 @@
 import Ticket from '../models/Ticket.js';
+import User from '../models/User.js';
 
 class DashboardService {
   /**
    * Get ticket stats based on user role:
-   * - Admin: sees all system tickets
+   * - Admin: sees all system tickets + user stats
    * - Agent: sees only assigned tickets
    * - User: sees only created tickets
    */
@@ -25,7 +26,26 @@ class DashboardService {
       Ticket.countDocuments({ ...filter, priority: 'Urgent' })
     ]);
 
-    return { total, open, inProgress, resolved, closed, urgent };
+    let userStats = null;
+    if (user.role === 'Admin') {
+      const [totalUsers, admins, agents, users] = await Promise.all([
+        User.countDocuments(),
+        User.countDocuments({ role: 'Admin' }),
+        User.countDocuments({ role: 'Agent' }),
+        User.countDocuments({ role: 'User' })
+      ]);
+      userStats = { totalUsers, admins, agents, users };
+    }
+
+    return { 
+      total, 
+      open, 
+      inProgress, 
+      resolved, 
+      closed, 
+      urgent,
+      ...(userStats && { userStats })
+    };
   }
 }
 

@@ -29,4 +29,7 @@ router.patch('/:id/role', asyncHandler(UserController.updateRole));
 // PATCH /api/users/:id/status — activate or deactivate
 router.patch('/:id/status', asyncHandler(UserController.updateStatus));
 
+// DELETE /api/users/:id       — delete user (Admin only)
+router.delete('/:id', asyncHandler(UserController.deleteUser));
+
 export default router;

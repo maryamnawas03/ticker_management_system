@@ -17,3 +17,6 @@ export const updateUserRoleRequest = (id, role) =>
 
 export const updateUserStatusRequest = (id, status) =>
   api.patch(`/users/${id}/status`, { status });
+
+export const deleteUserRequest = (id) =>
+  api.delete(`/users/${id}`);

@@ -155,6 +155,27 @@ class UserService {
 
     return userObj;
   }
+
+  /**
+   * Delete a user (Admin only)
+   * Cannot delete own account to prevent lockout
+   */
+  static async deleteUser(userId, requestingUserId) {
+    if (userId === requestingUserId.toString()) {
+      const error = new Error('You cannot delete your own account');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const user = await User.findByIdAndDelete(userId);
+    if (!user) {
+      const error = new Error('User not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    return user;
+  }
 }
 
 export default UserService;

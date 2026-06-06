@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchUsers, updateUserRole, updateUserStatus, createUser } from '../features/users/userSlice';
+import { fetchUsers, updateUserRole, updateUserStatus, createUser, deleteUser } from '../features/users/userSlice';
 import Loader from '../components/common/Loader';
 import ErrorMessage from '../components/common/ErrorMessage';
 
@@ -119,6 +119,17 @@ const UserManagement = () => {
 
     if (window.confirm(`Are you sure you want to ${actionText} this user's account?`)) {
       dispatch(updateUserStatus({ id: userId, status: newStatus }))
+        .unwrap()
+        .then(() => {
+          dispatch(fetchUsers({ page, limit: 10, search, role, status }));
+        })
+        .catch(() => {});
+    }
+  };
+
+  const handleDeleteUser = (userId) => {
+    if (window.confirm("Are you sure you want to permanently delete this user's account? This action cannot be undone.")) {
+      dispatch(deleteUser(userId))
         .unwrap()
         .then(() => {
           dispatch(fetchUsers({ page, limit: 10, search, role, status }));
@@ -327,7 +338,8 @@ const UserManagement = () => {
                   <th style={{ padding: '16px 20px' }}>Joined Date</th>
                   <th style={{ padding: '16px 20px' }}>Role</th>
                   <th style={{ padding: '16px 20px' }}>Status</th>
-                  <th style={{ padding: '16px 20px', textAlign: 'right' }}>Actions</th>
+                  <th style={{ padding: '16px 20px' }}>Actions</th>
+                  <th style={{ padding: '16px 20px', textAlign: 'right' }}>Delete</th>
                 </tr>
               </thead>
               <tbody>
@@ -449,7 +461,7 @@ const UserManagement = () => {
                       </td>
 
                       {/* Action buttons */}
-                      <td style={{ padding: '16px 20px', textAlign: 'right' }}>
+                      <td style={{ padding: '16px 20px' }}>
                         <button
                           onClick={() => handleStatusToggle(u._id, u.status)}
                           disabled={isSelf}
@@ -472,6 +484,31 @@ const UserManagement = () => {
                             {u.status === 'Active' ? 'block' : 'check'}
                           </span>
                           <span>{u.status === 'Active' ? 'Deactivate' : 'Activate'}</span>
+                        </button>
+                      </td>
+
+                      {/* Delete button */}
+                      <td style={{ padding: '16px 20px', textAlign: 'right' }}>
+                        <button
+                          onClick={() => handleDeleteUser(u._id)}
+                          disabled={isSelf}
+                          className="logout-btn"
+                          style={{
+                            width: 'auto',
+                            padding: '6px 10px',
+                            fontSize: 12,
+                            opacity: isSelf ? 0.4 : 1,
+                            cursor: isSelf ? 'not-allowed' : 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            borderColor: 'rgba(239,68,68,0.3)',
+                            color: '#ef4444',
+                            background: 'transparent',
+                            minHeight: 'auto',
+                          }}
+                          title="Delete User"
+                        >
+                          <span className="material-icons" style={{ fontSize: 16 }}>delete</span>
                         </button>
                       </td>
                     </tr>

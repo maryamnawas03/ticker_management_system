@@ -4,6 +4,7 @@ import {
   updateUserRoleRequest,
   updateUserStatusRequest,
   createUserRequest,
+  deleteUserRequest,
 } from '../../api/userApi';
 
 // ── Async Thunks ──────────────────────────────────────────────────────────────
@@ -52,6 +53,18 @@ export const createUser = createAsyncThunk(
       return data;
     } catch (err) {
       return rejectWithValue(err.message || 'Failed to create user');
+    }
+  }
+);
+
+export const deleteUser = createAsyncThunk(
+  'users/deleteUser',
+  async (id, { rejectWithValue }) => {
+    try {
+      await deleteUserRequest(id);
+      return id;
+    } catch (err) {
+      return rejectWithValue(err.message || 'Failed to delete user');
     }
   }
 );
@@ -129,6 +142,19 @@ const userSlice = createSlice({
         state.users = [action.payload, ...state.users];
       })
       .addCase(createUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      // Delete User
+      .addCase(deleteUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.users = state.users.filter((u) => u._id !== action.payload);
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });
