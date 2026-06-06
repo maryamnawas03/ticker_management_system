@@ -18,6 +18,8 @@ const TicketList = () => {
   const [status, setStatus] = useState('');
   const [priority, setPriority] = useState('');
   const [category, setCategory] = useState('');
+  const [sortBy, setSortBy] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('desc');
   const [page, setPage] = useState(1);
 
   const categories = [
@@ -37,6 +39,8 @@ const TicketList = () => {
     const params = {
       page,
       limit: 10,
+      sortBy,
+      sortOrder,
       ...(search && { search }),
       ...(status && { status }),
       ...(priority && { priority }),
@@ -44,7 +48,7 @@ const TicketList = () => {
     };
     
     dispatch(fetchTickets(params));
-  }, [dispatch, page, status, priority, category]); // We poll search separately on submit or debounce
+  }, [dispatch, page, status, priority, category, sortBy, sortOrder]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -52,6 +56,8 @@ const TicketList = () => {
     dispatch(fetchTickets({
       page: 1,
       limit: 10,
+      sortBy,
+      sortOrder,
       ...(search && { search }),
       ...(status && { status }),
       ...(priority && { priority }),
@@ -64,8 +70,10 @@ const TicketList = () => {
     setStatus('');
     setPriority('');
     setCategory('');
+    setSortBy('createdAt');
+    setSortOrder('desc');
     setPage(1);
-    dispatch(fetchTickets({ page: 1, limit: 10 }));
+    dispatch(fetchTickets({ page: 1, limit: 10, sortBy: 'createdAt', sortOrder: 'desc' }));
   };
 
   const formatDate = (dateStr) => {
@@ -189,9 +197,29 @@ const TicketList = () => {
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
+
+            {/* Sort Dropdown */}
+            <select
+              className="field-input"
+              value={`${sortBy}-${sortOrder}`}
+              onChange={(e) => {
+                const [by, order] = e.target.value.split('-');
+                setSortBy(by);
+                setSortOrder(order);
+                setPage(1);
+              }}
+              style={{ width: 160, padding: '8px 12px', background: 'var(--bg-raised)' }}
+            >
+              <option value="createdAt-desc">Newest First</option>
+              <option value="createdAt-asc">Oldest First</option>
+              <option value="title-asc">Title: A to Z</option>
+              <option value="title-desc">Title: Z to A</option>
+              <option value="status-asc">Status: A to Z</option>
+              <option value="status-desc">Status: Z to A</option>
+            </select>
           </div>
 
-          {(search || status || priority || category) && (
+          {(search || status || priority || category || sortBy !== 'createdAt' || sortOrder !== 'desc') && (
             <button
               onClick={handleClearFilters}
               className="logout-btn"

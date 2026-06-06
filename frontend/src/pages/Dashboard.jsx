@@ -1,18 +1,16 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDashboardStatsRequest } from '../api/dashboardApi';
+import { fetchDashboardStats } from '../features/dashboard/dashboardSlice';
 import Loader from '../components/common/Loader';
+import ErrorMessage from '../components/common/ErrorMessage';
 
 /**
  * Dashboard Page
  *
- * Shows summary statistics cards for the logged-in user's role:
- *   Admin → all tickets
+ * Shows summary statistics cards dynamically fetched for the logged-in user's role:
+ *   Admin → all system tickets
  *   Agent → assigned tickets
  *   User  → own tickets
- *
- * Stats API will be wired on Day 5. For now shows placeholder cards
- * with zeros that will hydrate once the dashboard backend is complete.
  */
 
 const statCards = [
@@ -25,15 +23,22 @@ const statCards = [
 ];
 
 const Dashboard = () => {
-  const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  const { stats, isLoading, error } = useSelector((state) => state.dashboard);
 
-  // Stats placeholder — will be wired to dashboardSlice thunk on Day 5
-  const stats = {
-    total: 0, open: 0, inProgress: 0,
-    resolved: 0, closed: 0, urgent: 0,
+  useEffect(() => {
+    dispatch(fetchDashboardStats());
+  }, [dispatch]);
+
+  const counts = stats || {
+    total: 0,
+    open: 0,
+    inProgress: 0,
+    resolved: 0,
+    closed: 0,
+    urgent: 0,
   };
-  const isLoading = false;
 
   return (
     <div className="dashboard-page">
@@ -49,6 +54,8 @@ const Dashboard = () => {
         </p>
       </div>
 
+      {error && <ErrorMessage message={error} style={{ marginBottom: 24 }} />}
+
       {/* Stats grid */}
       {isLoading ? (
         <Loader text="Loading statistics…" />
@@ -59,7 +66,7 @@ const Dashboard = () => {
               <div className="material-icons stat-icon" style={{ color: card.color }}>{card.icon}</div>
               <div className="stat-info">
                 <p className="stat-value" style={{ color: card.color }}>
-                  {stats[card.key] ?? 0}
+                  {counts[card.key] ?? 0}
                 </p>
                 <p className="stat-label">{card.label}</p>
               </div>
