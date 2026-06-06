@@ -129,6 +129,32 @@ class UserService {
 
     return user;
   }
+
+  /**
+   * Create a new user (Admin only)
+   */
+  static async createUser({ name, email, password, role = 'User', status = 'Active' }) {
+    if (!name || !email || !password) {
+      const error = new Error('Name, email, and password are required');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      const error = new Error('Email already registered');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const user = await User.create({ name, email, password, role, status });
+
+    // Convert to object and strip password
+    const userObj = user.toObject();
+    delete userObj.password;
+
+    return userObj;
+  }
 }
 
 export default UserService;

@@ -3,6 +3,7 @@ import {
   getUsersRequest,
   updateUserRoleRequest,
   updateUserStatusRequest,
+  createUserRequest,
 } from '../../api/userApi';
 
 // ── Async Thunks ──────────────────────────────────────────────────────────────
@@ -39,6 +40,18 @@ export const updateUserStatus = createAsyncThunk(
       return data; // updated user object
     } catch (err) {
       return rejectWithValue(err.message || 'Failed to update user status');
+    }
+  }
+);
+
+export const createUser = createAsyncThunk(
+  'users/createUser',
+  async (userData, { rejectWithValue }) => {
+    try {
+      const data = await createUserRequest(userData);
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.message || 'Failed to create user');
     }
   }
 );
@@ -103,6 +116,19 @@ const userSlice = createSlice({
         );
       })
       .addCase(updateUserStatus.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      // Create User
+      .addCase(createUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(createUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.users = [action.payload, ...state.users];
+      })
+      .addCase(createUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });

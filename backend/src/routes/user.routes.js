@@ -13,6 +13,9 @@ router.use(roleMiddleware(['Admin']));
 // GET /api/users          — list all users (with pagination, filter, search)
 router.get('/', asyncHandler(UserController.getAllUsers));
 
+// POST /api/users         — create a new user (Admin only)
+router.post('/', asyncHandler(UserController.createUser));
+
 // GET /api/users/agents   — list active agents (for ticket assignment)
 // IMPORTANT: must be defined BEFORE /:id to avoid 'agents' being treated as an ID
 router.get('/agents', asyncHandler(UserController.getAgents));

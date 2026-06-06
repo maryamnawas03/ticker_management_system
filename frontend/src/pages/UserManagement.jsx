@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchUsers, updateUserRole, updateUserStatus } from '../features/users/userSlice';
+import { fetchUsers, updateUserRole, updateUserStatus, createUser } from '../features/users/userSlice';
 import Loader from '../components/common/Loader';
 import ErrorMessage from '../components/common/ErrorMessage';
 
@@ -18,6 +18,12 @@ const UserManagement = () => {
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
 
+  // Create User Modal States
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newUserData, setNewUserData] = useState({ name: '', email: '', password: '', role: 'User' });
+  const [validationError, setValidationError] = useState('');
+  const [createLoading, setCreateLoading] = useState(false);
+
   const roles = ['Admin', 'Agent', 'User'];
   const statuses = ['Active', 'Inactive'];
 
@@ -31,6 +37,47 @@ const UserManagement = () => {
     };
     dispatch(fetchUsers(params));
   }, [dispatch, page, role, status]);
+
+  const handleCreateSubmit = (e) => {
+    e.preventDefault();
+    setValidationError('');
+
+    // Form validations
+    if (!newUserData.name.trim()) {
+      setValidationError('Name is required');
+      return;
+    }
+    if (!newUserData.email.trim()) {
+      setValidationError('Email is required');
+      return;
+    }
+    const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+    if (!emailRegex.test(newUserData.email.trim())) {
+      setValidationError('Please provide a valid email address');
+      return;
+    }
+    if (newUserData.password.length < 6) {
+      setValidationError('Password must be at least 6 characters');
+      return;
+    }
+
+    setCreateLoading(true);
+    dispatch(createUser(newUserData))
+      .unwrap()
+      .then(() => {
+        setIsModalOpen(false);
+        setNewUserData({ name: '', email: '', password: '', role: 'User' });
+        // Reload list to include new user
+        dispatch(fetchUsers({ page: 1, limit: 10 }));
+        setPage(1);
+      })
+      .catch((err) => {
+        setValidationError(err || 'Failed to create user');
+      })
+      .finally(() => {
+        setCreateLoading(false);
+      });
+  };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -107,14 +154,27 @@ const UserManagement = () => {
             Overview of all registered users. Update roles, change statuses, and manage access.
           </p>
         </div>
-        <button
-          onClick={() => navigate('/dashboard')}
-          className="logout-btn"
-          style={{ width: 'auto', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 6 }}
-        >
-          <span className="material-icons" style={{ fontSize: 16 }}>arrow_back</span>
-          <span>Back to Dashboard</span>
-        </button>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button
+            onClick={() => {
+              setValidationError('');
+              setIsModalOpen(true);
+            }}
+            className="auth-btn"
+            style={{ width: 'auto', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 6, marginTop: 0 }}
+          >
+            <span className="material-icons" style={{ fontSize: 18 }}>add</span>
+            <span>Create User</span>
+          </button>
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="logout-btn"
+            style={{ width: 'auto', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 6 }}
+          >
+            <span className="material-icons" style={{ fontSize: 16 }}>arrow_back</span>
+            <span>Back to Dashboard</span>
+          </button>
+        </div>
       </div>
 
       {error && <ErrorMessage message={error} style={{ marginBottom: 24 }} />}
@@ -457,6 +517,130 @@ const UserManagement = () => {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Create User Modal */}
+      {isModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.6)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            style={{
+              background: 'var(--bg-surface)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-lg)',
+              padding: 32,
+              width: '100%',
+              maxWidth: 480,
+              boxShadow: 'var(--shadow-lg)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 20 }}>
+              Create New User
+            </h3>
+
+            {validationError && (
+              <ErrorMessage message={validationError} style={{ marginBottom: 16 }} />
+            )}
+
+            <form onSubmit={handleCreateSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div className="field-group">
+                <label className="field-label" htmlFor="new-name">Full Name</label>
+                <input
+                  id="new-name"
+                  type="text"
+                  className="field-input"
+                  style={{ background: 'var(--bg-raised)' }}
+                  placeholder="John Doe"
+                  value={newUserData.name}
+                  onChange={(e) => setNewUserData((prev) => ({ ...prev, name: e.target.value }))}
+                  disabled={createLoading}
+                  required
+                />
+              </div>
+
+              <div className="field-group">
+                <label className="field-label" htmlFor="new-email">Email Address</label>
+                <input
+                  id="new-email"
+                  type="email"
+                  className="field-input"
+                  style={{ background: 'var(--bg-raised)' }}
+                  placeholder="john@example.com"
+                  value={newUserData.email}
+                  onChange={(e) => setNewUserData((prev) => ({ ...prev, email: e.target.value }))}
+                  disabled={createLoading}
+                  required
+                />
+              </div>
+
+              <div className="field-group">
+                <label className="field-label" htmlFor="new-password">Password</label>
+                <input
+                  id="new-password"
+                  type="password"
+                  className="field-input"
+                  style={{ background: 'var(--bg-raised)' }}
+                  placeholder="••••••••"
+                  value={newUserData.password}
+                  onChange={(e) => setNewUserData((prev) => ({ ...prev, password: e.target.value }))}
+                  disabled={createLoading}
+                  required
+                />
+              </div>
+
+              <div className="field-group">
+                <label className="field-label" htmlFor="new-role">Role</label>
+                <select
+                  id="new-role"
+                  className="field-input"
+                  style={{ background: 'var(--bg-raised)' }}
+                  value={newUserData.role}
+                  onChange={(e) => setNewUserData((prev) => ({ ...prev, role: e.target.value }))}
+                  disabled={createLoading}
+                >
+                  <option value="User">User (Client)</option>
+                  <option value="Agent">Agent (Support staff)</option>
+                  <option value="Admin">Admin (Full access)</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 12 }}>
+                <button
+                  type="button"
+                  className="logout-btn"
+                  style={{ width: 'auto', padding: '10px 20px' }}
+                  onClick={() => setIsModalOpen(false)}
+                  disabled={createLoading}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="auth-btn"
+                  style={{ width: 'auto', padding: '10px 24px', marginTop: 0 }}
+                  disabled={createLoading}
+                >
+                  {createLoading ? 'Creating...' : 'Create User'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

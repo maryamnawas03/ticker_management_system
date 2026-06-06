@@ -3,6 +3,9 @@ import api from './axiosInstance';
 export const getUsersRequest = (params) =>
   api.get('/users', { params });
 
+export const createUserRequest = (userData) =>
+  api.post('/users', userData);
+
 export const getAgentsRequest = () =>
   api.get('/users/agents');
 

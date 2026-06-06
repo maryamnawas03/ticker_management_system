@@ -72,6 +72,18 @@ class UserController {
       new ApiResponse(200, user, 'User status updated successfully')
     );
   }
+
+  /**
+   * POST /api/users
+   * Create a new user (Admin only)
+   */
+  static async createUser(req, res) {
+    const { name, email, password, role, status } = req.body;
+    const user = await UserService.createUser({ name, email, password, role, status });
+    return res.status(201).json(
+      new ApiResponse(201, user, 'User created successfully')
+    );
+  }
 }
 
 export default UserController;
