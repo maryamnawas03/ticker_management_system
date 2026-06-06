@@ -40,7 +40,7 @@ class TicketService {
    * Get filtered, searched, and paginated tickets based on user role
    */
   static async getTickets(query, user) {
-    const { status, priority, category, search, page = 1, limit = 10 } = query;
+    const { status, priority, category, search, page = 1, limit = 10, sortBy, sortOrder } = query;
     const filter = {};
 
     // 1. Role-based restrictions
@@ -65,14 +65,21 @@ class TicketService {
       ];
     }
 
-    // 4. Pagination & Query execution
+    // 4. Sorting & Pagination & Query execution
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const limitNum = parseInt(limit);
+
+    const sort = {};
+    if (sortBy) {
+      sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
+    } else {
+      sort.createdAt = -1;
+    }
 
     const tickets = await Ticket.find(filter)
       .populate('createdBy', 'name email role')
       .populate('assignedTo', 'name email role')
-      .sort({ createdAt: -1 })
+      .sort(sort)
       .skip(skip)
       .limit(limitNum);
 
