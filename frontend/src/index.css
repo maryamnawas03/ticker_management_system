@@ -514,3 +514,26 @@ img, svg { display: block; }
   .page-content { padding: 20px; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ── Custom Scrollbar (Premium Dark Aesthetic) ─────────────────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+
+/* Webkit fallback */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+

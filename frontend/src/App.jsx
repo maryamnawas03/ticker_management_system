@@ -19,9 +19,8 @@ import CreateTicket from './pages/CreateTicket';
 import TicketDetails from './pages/TicketDetails';
 import EditTicket    from './pages/EditTicket';
 
-// Placeholder pages — built on Day 6
-const UserManagement = () => <div className="page-placeholder"><h2>User Management</h2><p>Coming Day 6</p></div>;
-const NotFound       = () => <div className="page-placeholder"><h2>404 — Page not found</h2></div>;
+import UserManagement from './pages/UserManagement';
+import NotFound from './pages/NotFound';
 
 const App = () => {
   const dispatch = useDispatch();

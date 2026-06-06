@@ -306,116 +306,79 @@ npm run preview      # Preview build
 ### Database (MongoDB Atlas)
 Already hosted - just update connection string in production
 
-## 📋 Day 1 Completion Status
+## 📋 Project Milestones Completion Status
 
-### ✅ Requirements Completed
+### ✅ Day 1: Foundation & Setup
+- [x] Initialised MVC project architecture for Express backend and Vite React frontend.
+- [x] Installed and configured Mongoose schemas for Users and Tickets.
+- [x] Set up database connection logic to MongoDB Atlas.
+- [x] Initialised local git repository and staged baseline structure.
 
-**1. Understand Requirements**
-- [x] Reviewed MERN stack requirements
-- [x] Understood role-based access control
-- [x] Identified backend architecture (MVC with Services)
-- [x] Identified frontend architecture (React + Redux Toolkit)
+### ✅ Day 2: Authentication & Routing
+- [x] Implemented JWT-based session tokens with password hashing using bcrypt.
+- [x] Configured role-based access control middleware (`Admin`, `Agent`, `User`).
+- [x] Built frontend Register & Login screens with state hydration via Redux.
+- [x] Wired protected route guards for client-side navigation security.
 
-**2. Plan Folder Structure**
-- [x] Backend folder structure created with proper separation of concerns
-- [x] Frontend folder structure initialized with Vite and Tailwind
-- [x] Configuration files properly organized
+### ✅ Day 3: Ticket CRUD & API Integration
+- [x] Implemented Ticket creation backend service and validation criteria.
+- [x] Wired ticket list query handlers to support role-specific scope (Admin sees all, Agent sees assigned, User sees own).
+- [x] Built single ticket details view layout with full historical audits.
+- [x] Integrated backend api endpoints with frontend React components.
 
-**3. Set up Backend**
-- [x] Express.js app initialized
-- [x] All required dependencies installed
-- [x] Server entry point created
-- [x] Environment variables configured
+### ✅ Day 4: Ticket Operations & Interactive Discussion
+- [x] Added ticket modification and ticket deletion (restricted by role).
+- [x] Implemented ticket status transition log and historical audit tracking.
+- [x] Created agent assignment controls for Admins.
+- [x] Built discussion comments feed allowing users and agents to add and delete comments (restricted to authors and admins).
 
-**4. Set up Frontend**
-- [x] React + Vite configured
-- [x] Redux Toolkit integrated
-- [x] Tailwind CSS setup
-- [x] All frontend dependencies installed
+### ✅ Day 5: Dashboard Statistics, Search, Filters & Sorting
+- [x] Developed dynamic dashboard statistics API calculating role-specific ticket states.
+- [x] Wired search engine matching title, description, or Ticket Number.
+- [x] Added multi-attribute drop-down filters (Status, Priority, Category).
+- [x] Implemented sort ordering criteria (Newest, Oldest, Title A-Z/Z-A, Status A-Z/Z-A).
+- [x] Configured paginated list fetches with custom page controllers.
+- [x] Styled form validations, error fields, loading states, and empty states.
 
-**5. Set up MongoDB**
-- [x] MongoDB connection configuration created
-- [x] User model with password hashing and role support
-- [x] Ticket model with all required fields
-- [x] Connection string format documented
-
-**6. Create Git Repository**
-- [x] Repository initialized and connected to GitHub
-- [x] Professional commits with conventional naming
-- [x] `.gitignore` properly configured
-- [x] Code organized in logical modules
-
-### 📊 Project Stats
-
-**Backend:**
-- 7+ main dependencies installed
-- Auth service, controller, routes ready
-- Middleware for auth, role-based access, and error handling
-- Database models designed and implemented
-
-**Frontend:**
-- 9+ main dependencies installed
-- Build tool (Vite) configured
-- Styling framework (Tailwind) setup
-- Redux structure ready for state management
-
-**Git Repository:**
-- 4 professional commits
-- Clean commit history
-- Proper gitignore configuration
-
-## 🎯 Next Steps - Day 2 Focus
-
-### Database Setup
-1. Create MongoDB Atlas account (if not done)
-2. Create a cluster
-3. Generate connection string
-4. Update `backend/.env` with connection string
-
-### Testing Authentication
-1. Start backend server: `npm run dev` (in backend directory)
-2. Test `/api/auth/register` endpoint
-3. Test `/api/auth/login` endpoint
-4. Verify JWT token generation
-
-### Frontend Authentication Pages
-1. Create login page component
-2. Create register page component
-3. Integrate with Redux for state management
-4. Add protected route wrapper
-
-### Protected Routes
-1. Test auth middleware on backend
-2. Create protected route component on frontend
-3. Verify unauthorized access is blocked
-
-## 📚 Architecture Notes
-
-### Backend Pattern (MVC + Services)
-- **Routes**: Define API endpoints
-- **Controllers**: Handle requests/responses
-- **Services**: Contain business logic
-- **Models**: MongoDB schemas
-- **Middleware**: Auth, validation, error handling
-- **Utils**: Reusable helpers
-
-### Frontend State Management
-- Redux Toolkit for auth, tickets, users, dashboard
-- Axios for API calls
-- React Router for navigation
-- Protected routes based on user role
-
-## 🔒 Security Features Implemented
-
-- Password hashing with bcrypt
-- JWT token generation and validation
-- Role-based access control middleware
-- Protected API routes
-- CORS configuration
-- Environment variables for sensitive data
+### ✅ Day 6: User Management, UI Polish & Deployment
+- [x] Created User Management control center (Admin-only) for changing roles and activating/deactivating accounts.
+- [x] Built modern NotFound 404 page routing with dashboard redirect.
+- [x] Customised scrollbars and polished transition states in `index.css`.
+- [x] Standardised `.env.example` templates for deployment security.
+- [x] Configured client routing rewrites (`vercel.json`) for SPA routing support.
 
 ---
 
-**Status**: Day 1 Complete ✅
-**Last Updated**: June 4, 2026
-**Next Milestone**: Day 2 - Complete Authentication Testing
+## 🚀 Deployment Instructions
+
+### 📦 Backend Deployment (Render / Railway)
+1. **Repository Setup:** Push the repository to GitHub.
+2. **Web Service Setup:** Create a new Web Service on Render, linking your GitHub repository.
+3. **Root Directory:** Set the Root Directory to `backend`.
+4. **Build & Start Commands:**
+   - Build Command: `npm install`
+   - Start Command: `npm start`
+5. **Environment Variables:** Define the following variables:
+   - `MONGO_URI`: Your MongoDB Atlas connection string.
+   - `PORT`: `10000` (or leave default for Render).
+   - `NODE_ENV`: `production`
+   - `JWT_SECRET`: A secure, randomly generated string.
+   - `JWT_EXPIRY`: `7d`
+   - `FRONTEND_URL`: The URL of your deployed frontend (e.g., `https://your-app.vercel.app`).
+
+### 📦 Frontend Deployment (Vercel)
+1. **Project Setup:** Link your repository to a new project in Vercel.
+2. **Build Configurations:**
+   - Framework Preset: `Other` (or Vite if auto-detected).
+   - Root Directory: `frontend`
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+3. **Environment Variables:** Define the API url:
+   - `VITE_API_BASE_URL`: The URL of your deployed backend (e.g., `https://your-backend.onrender.com/api`).
+4. **Routing Support:** The provided `vercel.json` file handles rewrites to keep single-page navigation functional when users reload custom URLs.
+
+---
+
+**Status**: Project Completed ✅
+**Last Updated**: June 6, 2026
+
