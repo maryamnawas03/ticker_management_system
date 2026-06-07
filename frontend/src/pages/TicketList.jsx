@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchTickets } from '../features/tickets/ticketSlice';
+import { fetchTickets, deleteTicket } from '../features/tickets/ticketSlice';
 import StatusBadge from '../components/common/StatusBadge';
 import PriorityBadge from '../components/common/PriorityBadge';
 import ErrorMessage from '../components/common/ErrorMessage';
@@ -12,6 +12,26 @@ const TicketList = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const { tickets, pagination, isLoading, error } = useSelector((state) => state.tickets);
+
+  const handleDeleteTicket = (ticketId, ticketNumber) => {
+    if (window.confirm(`Are you sure you want to permanently delete ticket ${ticketNumber}? This action cannot be undone.`)) {
+      dispatch(deleteTicket(ticketId))
+        .unwrap()
+        .then(() => {
+          dispatch(fetchTickets({
+            page,
+            limit: 10,
+            sortBy,
+            sortOrder,
+            ...(search && { search }),
+            ...(status && { status }),
+            ...(priority && { priority }),
+            ...(category && { category })
+          }));
+        })
+        .catch(() => {});
+    }
+  };
 
   // Filter and Search states
   const [search, setSearch] = useState('');
@@ -286,6 +306,7 @@ const TicketList = () => {
                   <th style={{ padding: '16px 20px' }}>Created</th>
                   {user.role !== 'User' && <th style={{ padding: '16px 20px' }}>Creator</th>}
                   {user.role !== 'Agent' && <th style={{ padding: '16px 20px' }}>Agent</th>}
+                  {user.role === 'Admin' && <th style={{ padding: '16px 20px', textAlign: 'right' }}>Actions</th>}
                 </tr>
               </thead>
               <tbody>
@@ -336,6 +357,31 @@ const TicketList = () => {
                         ) : (
                           <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Unassigned</span>
                         )}
+                      </td>
+                    )}
+                    {user.role === 'Admin' && (
+                      <td style={{ padding: '16px 20px', textAlign: 'right' }}>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteTicket(t._id, t.ticketNumber);
+                          }}
+                          className="logout-btn"
+                          style={{
+                            width: 'auto',
+                            padding: '6px 10px',
+                            fontSize: 12,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            borderColor: 'rgba(239, 68, 68, 0.3)',
+                            color: '#ef4444',
+                            background: 'transparent',
+                            minHeight: 'auto'
+                          }}
+                          title="Delete Ticket"
+                        >
+                          <span className="material-icons" style={{ fontSize: 16 }}>delete</span>
+                        </button>
                       </td>
                     )}
                   </tr>
