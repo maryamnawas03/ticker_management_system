@@ -13,7 +13,7 @@ import Navbar from './Navbar';
 
 const pageTitles = {
   '/dashboard':    'Dashboard',
-  '/tickets':      'Tickets',
+  '/tickets':      'Ticket Management',
   '/tickets/new':  'Create Ticket',
   '/users':        'User Management',
 };

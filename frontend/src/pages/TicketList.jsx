@@ -116,11 +116,9 @@ const TicketList = () => {
         }}
       >
         <div>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)' }}>Support Tickets</h2>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)' }}>Ticket Management</h2>
           <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
-            {user.role === 'Admin' && 'Oversee and manage all support tickets in the system.'}
-            {user.role === 'Agent' && 'Manage support tickets assigned to you.'}
-            {user.role === 'User' && 'Track and manage your submitted support tickets.'}
+            View, search, filter, and manage all support tickets in one place.
           </p>
         </div>
 
@@ -284,6 +282,7 @@ const TicketList = () => {
             <table 
               style={{
                 width: '100%',
+                minWidth: '1050px',
                 borderCollapse: 'collapse',
                 textAlign: 'left',
                 fontSize: 14
@@ -298,15 +297,15 @@ const TicketList = () => {
                     fontWeight: 600
                   }}
                 >
-                  <th style={{ padding: '16px 20px' }}>ID</th>
-                  <th style={{ padding: '16px 20px' }}>Title</th>
-                  <th style={{ padding: '16px 20px' }}>Category</th>
-                  <th style={{ padding: '16px 20px' }}>Priority</th>
-                  <th style={{ padding: '16px 20px' }}>Status</th>
-                  <th style={{ padding: '16px 20px' }}>Created</th>
-                  {user.role !== 'User' && <th style={{ padding: '16px 20px' }}>Creator</th>}
-                  {user.role !== 'Agent' && <th style={{ padding: '16px 20px' }}>Agent</th>}
-                  {user.role === 'Admin' && <th style={{ padding: '16px 20px', textAlign: 'right' }}>Actions</th>}
+                  <th style={{ padding: '16px 20px', width: '100px' }}>ID</th>
+                  <th style={{ padding: '16px 20px', minWidth: '220px' }}>Title</th>
+                  <th style={{ padding: '16px 20px', width: '140px' }}>Category</th>
+                  <th style={{ padding: '16px 20px', width: '110px' }}>Priority</th>
+                  <th style={{ padding: '16px 20px', width: '110px' }}>Status</th>
+                  <th style={{ padding: '16px 20px', width: '120px' }}>Created</th>
+                  {user.role !== 'User' && <th style={{ padding: '16px 20px', width: '130px' }}>Creator</th>}
+                  {user.role !== 'Agent' && <th style={{ padding: '16px 20px', width: '130px' }}>Agent</th>}
+                  {user.role === 'Admin' && <th style={{ padding: '16px 20px', textAlign: 'center', width: '90px' }}>Actions</th>}
                 </tr>
               </thead>
               <tbody>
@@ -322,36 +321,36 @@ const TicketList = () => {
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-overlay)'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
-                    <td style={{ padding: '16px 20px', fontWeight: 600, color: 'var(--accent-light)' }}>
+                    <td style={{ padding: '16px 20px', fontWeight: 600, color: 'var(--accent-light)', whiteSpace: 'nowrap' }}>
                       {t.ticketNumber}
                     </td>
                     <td style={{ padding: '16px 20px', color: 'var(--text-primary)', fontWeight: 500 }}>
-                      <div style={{ maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.title}
                       </div>
                     </td>
-                    <td style={{ padding: '16px 20px', color: 'var(--text-secondary)' }}>
+                    <td style={{ padding: '16px 20px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
                       {t.category}
                     </td>
-                    <td style={{ padding: '16px 20px' }}>
+                    <td style={{ padding: '16px 20px', whiteSpace: 'nowrap' }}>
                       <PriorityBadge priority={t.priority} />
                     </td>
-                    <td style={{ padding: '16px 20px' }}>
+                    <td style={{ padding: '16px 20px', whiteSpace: 'nowrap' }}>
                       <StatusBadge status={t.status} />
                     </td>
-                    <td style={{ padding: '16px 20px', color: 'var(--text-muted)' }}>
+                    <td style={{ padding: '16px 20px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                       {formatDate(t.createdAt)}
                     </td>
                     {user.role !== 'User' && (
-                      <td style={{ padding: '16px 20px', color: 'var(--text-secondary)' }}>
+                      <td style={{ padding: '16px 20px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
                         {t.createdBy?.name || 'Unknown'}
                       </td>
                     )}
                     {user.role !== 'Agent' && (
-                      <td style={{ padding: '16px 20px', color: 'var(--text-secondary)' }}>
+                      <td style={{ padding: '16px 20px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
                         {t.assignedTo?.name ? (
-                          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399' }} />
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399', flexShrink: 0 }} />
                             {t.assignedTo.name}
                           </span>
                         ) : (
@@ -360,7 +359,7 @@ const TicketList = () => {
                       </td>
                     )}
                     {user.role === 'Admin' && (
-                      <td style={{ padding: '16px 20px', textAlign: 'right' }}>
+                      <td style={{ padding: '16px 20px', textAlign: 'center', width: 90 }}>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();

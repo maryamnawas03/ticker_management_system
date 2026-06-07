@@ -14,13 +14,20 @@ import ErrorMessage from '../components/common/ErrorMessage';
  */
 
 const statCards = [
-  { key: 'total',      label: 'Total Tickets',       icon: 'confirmation_number', color: '#6366f1' },
-  { key: 'open',       label: 'Open',                icon: 'folder_open',          color: '#6366f1' },
-  { key: 'inProgress', label: 'In Progress',         icon: 'sync',                 color: '#eab308' },
-  { key: 'resolved',   label: 'Resolved',            icon: 'check_circle',         color: '#22c55e' },
-  { key: 'closed',     label: 'Closed',              icon: 'lock',                 color: '#94a3b8' },
-  { key: 'urgent',     label: 'Urgent',              icon: 'error',                color: '#ef4444' },
+  { key: 'total',      label: 'Total Tickets',       icon: 'confirmation_number', color: '#6366F1' },
+  { key: 'open',       label: 'Open',                icon: 'folder_open',          color: '#3B82F6' },
+  { key: 'inProgress', label: 'In Progress',         icon: 'sync',                 color: '#F59E0B' },
+  { key: 'resolved',   label: 'Resolved',            icon: 'check_circle',         color: '#22C55E' },
+  { key: 'closed',     label: 'Closed',              icon: 'lock',                 color: '#64748B' },
+  { key: 'urgent',     label: 'Urgent',              icon: 'error',                color: '#EF4444' },
 ];
+
+const hexToRgb = (hex) => {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `${r}, ${g}, ${b}`;
+};
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -63,7 +70,15 @@ const Dashboard = () => {
         <div className="stats-grid">
           {statCards.map((card) => (
             <div key={card.key} className="stat-card">
-              <div className="material-icons stat-icon" style={{ color: card.color }}>{card.icon}</div>
+              <div 
+                className="stat-icon-wrapper" 
+                style={{ 
+                  background: `rgba(${hexToRgb(card.color)}, 0.1)`,
+                  color: card.color
+                }}
+              >
+                <span className="material-icons" style={{ fontSize: 20 }}>{card.icon}</span>
+              </div>
               <div className="stat-info">
                 <p className="stat-value" style={{ color: card.color }}>
                   {counts[card.key] ?? 0}
@@ -81,16 +96,32 @@ const Dashboard = () => {
           <h3 className="actions-title" style={{ marginBottom: 16 }}>User Account Statistics</h3>
           <div className="stats-grid">
             <div className="stat-card">
-              <div className="material-icons stat-icon" style={{ color: '#6366f1' }}>people</div>
+              <div 
+                className="stat-icon-wrapper" 
+                style={{ 
+                  background: 'rgba(99, 102, 241, 0.1)',
+                  color: '#6366F1'
+                }}
+              >
+                <span className="material-icons" style={{ fontSize: 20 }}>people</span>
+              </div>
               <div className="stat-info">
-                <p className="stat-value" style={{ color: '#6366f1' }}>
+                <p className="stat-value" style={{ color: '#6366F1' }}>
                   {counts.userStats.totalUsers ?? 0}
                 </p>
                 <p className="stat-label">Total Registered</p>
               </div>
             </div>
             <div className="stat-card">
-              <div className="material-icons stat-icon" style={{ color: '#8B5CF6' }}>shield</div>
+              <div 
+                className="stat-icon-wrapper" 
+                style={{ 
+                  background: 'rgba(139, 92, 246, 0.1)',
+                  color: '#8B5CF6'
+                }}
+              >
+                <span className="material-icons" style={{ fontSize: 20 }}>shield</span>
+              </div>
               <div className="stat-info">
                 <p className="stat-value" style={{ color: '#8B5CF6' }}>
                   {counts.userStats.admins ?? 0}
@@ -99,7 +130,15 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="stat-card">
-              <div className="material-icons stat-icon" style={{ color: '#06B6D4' }}>support_agent</div>
+              <div 
+                className="stat-icon-wrapper" 
+                style={{ 
+                  background: 'rgba(6, 182, 212, 0.1)',
+                  color: '#06B6D4'
+                }}
+              >
+                <span className="material-icons" style={{ fontSize: 20 }}>support_agent</span>
+              </div>
               <div className="stat-info">
                 <p className="stat-value" style={{ color: '#06B6D4' }}>
                   {counts.userStats.agents ?? 0}
@@ -108,9 +147,17 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="stat-card">
-              <div className="material-icons stat-icon" style={{ color: '#3b82f6' }}>person</div>
+              <div 
+                className="stat-icon-wrapper" 
+                style={{ 
+                  background: 'rgba(59, 130, 246, 0.1)',
+                  color: '#3B82F6'
+                }}
+              >
+                <span className="material-icons" style={{ fontSize: 20 }}>person</span>
+              </div>
               <div className="stat-info">
-                <p className="stat-value" style={{ color: '#3b82f6' }}>
+                <p className="stat-value" style={{ color: '#3B82F6' }}>
                   {counts.userStats.users ?? 0}
                 </p>
                 <p className="stat-label">Regular Clients</p>
