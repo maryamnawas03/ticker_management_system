@@ -59,7 +59,9 @@ const Login = () => {
       <div className="auth-card">
         {/* Header */}
         <div className="auth-header">
-          <div className="auth-logo">⚡</div>
+          <div className="auth-logo">
+            <span className="material-icons" style={{ fontSize: 36, color: 'var(--accent-light)' }}>flash_on</span>
+          </div>
           <h1 className="auth-title">TicketFlow</h1>
           <p className="auth-subtitle">Sign in to your account</p>
         </div>

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
@@ -20,12 +21,19 @@ const pageTitles = {
 const MainLayout = () => {
   const { pathname } = useLocation();
   const title = pageTitles[pathname] || 'TicketFlow';
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <div className="main-layout">
-      <Sidebar />
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      {isSidebarOpen && (
+        <div 
+          className="sidebar-backdrop" 
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
       <div className="main-content">
-        <Navbar title={title} />
+        <Navbar title={title} onMenuClick={() => setIsSidebarOpen(true)} />
         <main className="page-content" id="main-content">
           <Outlet />
         </main>

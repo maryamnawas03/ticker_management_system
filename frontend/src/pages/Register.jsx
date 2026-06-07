@@ -62,7 +62,9 @@ const Register = () => {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-header">
-          <div className="auth-logo">⚡</div>
+          <div className="auth-logo">
+            <span className="material-icons" style={{ fontSize: 36, color: 'var(--accent-light)' }}>flash_on</span>
+          </div>
           <h1 className="auth-title">TicketFlow</h1>
           <p className="auth-subtitle">Create your account</p>
         </div>
@@ -132,8 +134,9 @@ const Register = () => {
             {fieldErrors.confirm && <p className="field-error">{fieldErrors.confirm}</p>}
           </div>
 
-          <p className="auth-note">
-            ℹ Your account will be created as <strong>User</strong>. An Admin can change your role.
+          <p className="auth-note" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span className="material-icons" style={{ fontSize: 16 }}>info</span>
+            <span>Your account will be created as <strong>User</strong>. An Admin can change your role.</span>
           </p>
 
           <button

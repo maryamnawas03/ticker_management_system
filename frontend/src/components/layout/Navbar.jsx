@@ -6,13 +6,22 @@ import { useSelector } from 'react-redux';
  * Props:
  *   title — page heading to display
  */
-const Navbar = ({ title }) => {
+const Navbar = ({ title, onMenuClick }) => {
   const { user } = useSelector((state) => state.auth);
 
   return (
     <header className="navbar">
-      <div className="navbar-title">
-        <h1>{title || 'Dashboard'}</h1>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button
+          onClick={onMenuClick}
+          className="navbar-menu-btn"
+          aria-label="Open menu"
+        >
+          <span className="material-icons">menu</span>
+        </button>
+        <div className="navbar-title">
+          <h1>{title || 'Dashboard'}</h1>
+        </div>
       </div>
       <div className="navbar-right">
         <div className="navbar-user">

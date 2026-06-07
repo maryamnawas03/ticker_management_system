@@ -30,7 +30,7 @@ const userNav = [
 
 const navByRole = { Admin: adminNav, Agent: agentNav, User: userNav };
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
@@ -42,11 +42,20 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
       {/* Brand */}
-      <div className="sidebar-brand" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span className="material-icons brand-icon" style={{ color: '#f59e0b', fontSize: 24 }}>bolt</span>
-        <span className="brand-name">TicketFlow</span>
+      <div className="sidebar-brand" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px 20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span className="material-icons brand-icon" style={{ color: '#f59e0b', fontSize: 24 }}>bolt</span>
+          <span className="brand-name">TicketFlow</span>
+        </div>
+        <button
+          onClick={onClose}
+          className="sidebar-close-btn"
+          aria-label="Close menu"
+        >
+          <span className="material-icons">close</span>
+        </button>
       </div>
 
       {/* Role indicator */}

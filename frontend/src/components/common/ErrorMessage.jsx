@@ -27,7 +27,10 @@ const ErrorMessage = ({ message, onDismiss }) => {
         lineHeight: 1.5,
       }}
     >
-      <span>⚠ {message}</span>
+      <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span className="material-icons" style={{ fontSize: 18, color: '#ef4444' }}>error</span>
+        <span>{message}</span>
+      </span>
       {onDismiss && (
         <button
           onClick={onDismiss}
@@ -37,13 +40,13 @@ const ErrorMessage = ({ message, onDismiss }) => {
             border: 'none',
             color: '#fca5a5',
             cursor: 'pointer',
-            fontSize: 18,
-            lineHeight: 1,
             padding: 0,
             flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center'
           }}
         >
-          ×
+          <span className="material-icons" style={{ fontSize: 18 }}>close</span>
         </button>
       )}
     </div>
