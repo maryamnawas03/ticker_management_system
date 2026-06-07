@@ -90,18 +90,18 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="stat-card">
-              <div className="material-icons stat-icon" style={{ color: '#ef4444' }}>shield</div>
+              <div className="material-icons stat-icon" style={{ color: '#8B5CF6' }}>shield</div>
               <div className="stat-info">
-                <p className="stat-value" style={{ color: '#ef4444' }}>
+                <p className="stat-value" style={{ color: '#8B5CF6' }}>
                   {counts.userStats.admins ?? 0}
                 </p>
                 <p className="stat-label">Administrators</p>
               </div>
             </div>
             <div className="stat-card">
-              <div className="material-icons stat-icon" style={{ color: '#eab308' }}>support_agent</div>
+              <div className="material-icons stat-icon" style={{ color: '#06B6D4' }}>support_agent</div>
               <div className="stat-info">
-                <p className="stat-value" style={{ color: '#eab308' }}>
+                <p className="stat-value" style={{ color: '#06B6D4' }}>
                   {counts.userStats.agents ?? 0}
                 </p>
                 <p className="stat-label">Support Agents</p>
