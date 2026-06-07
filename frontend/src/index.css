@@ -10,26 +10,28 @@
 
 :root {
   /* Colors */
-  --bg-base:       #0f172a;
-  --bg-surface:    #1e293b;
-  --bg-raised:     #263244;
+  --bg-base:       #0F172A;
+  --bg-sidebar:    #111827;
+  --bg-surface:    #1E293B;
+  --bg-raised:     #243049;
   --bg-overlay:    rgba(255,255,255,0.04);
 
-  --accent:        #6366f1;
+  --accent:        #6366F1;
   --accent-light:  #818cf8;
+  --accent-hover:  #4F46E5;
   --accent-muted:  rgba(99,102,241,0.15);
 
-  --text-primary:  #f1f5f9;
-  --text-secondary:#94a3b8;
-  --text-muted:    #64748b;
+  --text-primary:  #F8FAFC;
+  --text-secondary:#CBD5E1;
+  --text-muted:    #94A3B8;
 
-  --border:        rgba(255,255,255,0.08);
+  --border:        #334155;
   --border-focus:  rgba(99,102,241,0.6);
 
-  --danger:        #ef4444;
+  --danger:        #EF4444;
   --danger-muted:  rgba(239,68,68,0.12);
-  --success:       #22c55e;
-  --warning:       #eab308;
+  --success:       #22C55E;
+  --warning:       #F59E0B;
 
   --radius-sm:     6px;
   --radius-md:     10px;
@@ -91,7 +93,7 @@ img, svg { display: block; }
   position: fixed;
   top: 0; left: 0; bottom: 0;
   width: var(--sidebar-w);
-  background: var(--bg-surface);
+  background: var(--bg-sidebar);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -131,9 +133,9 @@ img, svg { display: block; }
   background: var(--text-muted);
   flex-shrink: 0;
 }
-.role-dot[data-role="Admin"]  { background: #a78bfa; }
-.role-dot[data-role="Agent"]  { background: #34d399; }
-.role-dot[data-role="User"]   { background: #60a5fa; }
+.role-dot[data-role="Admin"]  { background: #8b5cf6; }
+.role-dot[data-role="Agent"]  { background: #06b6d4; }
+.role-dot[data-role="User"]   { background: #3b82f6; }
 
 .role-label {
   font-size: 11px;
@@ -269,9 +271,9 @@ img, svg { display: block; }
   background: var(--accent-muted);
   color: var(--accent-light);
 }
-.role-badge--admin  { background: rgba(167,139,250,0.15); color: #a78bfa; }
-.role-badge--agent  { background: rgba(52,211,153,0.15);  color: #34d399; }
-.role-badge--user   { background: rgba(96,165,250,0.15);  color: #60a5fa; }
+.role-badge--admin  { background: rgba(139,92,246,0.15); color: #a78bfa; }
+.role-badge--agent  { background: rgba(6,182,212,0.15);  color: #22d3ee; }
+.role-badge--user   { background: rgba(59,130,246,0.15);  color: #60a5fa; }
 
 /* ── Auth Pages ───────────────────────────────────────────────────────────── */
 .auth-page {
@@ -371,11 +373,11 @@ img, svg { display: block; }
   color: #fff;
   font-size: 14px;
   font-weight: 600;
-  transition: opacity var(--transition), transform var(--transition);
+  transition: opacity var(--transition), transform var(--transition), background-color var(--transition);
   margin-top: 4px;
 }
 .auth-btn:hover:not(:disabled) {
-  opacity: 0.88;
+  background: var(--accent-hover);
   transform: translateY(-1px);
 }
 .auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -481,14 +483,16 @@ img, svg { display: block; }
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   font-size: 14px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  font-weight: 600;
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+  transition: background var(--transition), color var(--transition), border-color var(--transition), transform var(--transition);
 }
 .action-card:hover {
-  background: var(--accent-muted);
-  border-color: var(--border-focus);
+  background: var(--bg-raised);
+  border-color: var(--accent);
   color: var(--accent-light);
+  transform: translateY(-1px);
 }
 .action-icon { font-size: 18px; }
 

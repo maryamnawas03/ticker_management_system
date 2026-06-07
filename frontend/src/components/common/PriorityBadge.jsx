@@ -7,10 +7,10 @@
  *   priority — 'Low' | 'Medium' | 'High' | 'Urgent'
  */
 const priorityConfig = {
-  Low:    { bg: 'rgba(148,163,184,0.15)', color: '#94a3b8' },
-  Medium: { bg: 'rgba(59,130,246,0.15)',  color: '#93c5fd' },
-  High:   { bg: 'rgba(249,115,22,0.15)',  color: '#fdba74' },
-  Urgent: { bg: 'rgba(239,68,68,0.15)',   color: '#fca5a5' },
+  Low:    { bg: 'rgba(100, 116, 139, 0.15)', color: '#cbd5e1' },
+  Medium: { bg: 'rgba(59, 130, 246, 0.15)',  color: '#60a5fa' },
+  High:   { bg: 'rgba(245, 158, 11, 0.15)',  color: '#fbbf24' },
+  Urgent: { bg: 'rgba(239, 68, 68, 0.15)',   color: '#fca5a5' },
 };
 
 const PriorityBadge = ({ priority }) => {

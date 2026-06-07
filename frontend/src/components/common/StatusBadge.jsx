@@ -7,10 +7,10 @@
  *   status — 'Open' | 'In Progress' | 'Resolved' | 'Closed'
  */
 const statusConfig = {
-  Open:         { bg: 'rgba(99,102,241,0.15)', color: '#a5b4fc', label: 'Open' },
-  'In Progress':{ bg: 'rgba(234,179,8,0.15)',  color: '#fde047', label: 'In Progress' },
-  Resolved:     { bg: 'rgba(34,197,94,0.15)',  color: '#86efac', label: 'Resolved' },
-  Closed:       { bg: 'rgba(148,163,184,0.15)',color: '#94a3b8', label: 'Closed' },
+  Open:         { bg: 'rgba(59, 130, 246, 0.15)',  color: '#60a5fa', label: 'Open' },
+  'In Progress':{ bg: 'rgba(245, 158, 11, 0.15)',  color: '#fbbf24', label: 'In Progress' },
+  Resolved:     { bg: 'rgba(34, 197, 94, 0.15)',   color: '#4ade80', label: 'Resolved' },
+  Closed:       { bg: 'rgba(100, 116, 139, 0.15)',  color: '#94a3b8', label: 'Closed' },
 };
 
 const StatusBadge = ({ status }) => {
