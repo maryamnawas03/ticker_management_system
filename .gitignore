@@ -32,3 +32,4 @@ Thumbs.db
 # Development tools
 .refact/
 *.tmp
+scratch/

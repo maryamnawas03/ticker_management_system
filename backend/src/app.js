@@ -34,7 +34,15 @@ app.use('/api/users', userRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
-// ── Health Check ──────────────────────────────────────────────────────────────
+// ── Health Check & Root Routes ───────────────────────────────────────────────
+app.get('/', (req, res) => {
+  res.json({ success: true, message: 'Ticket Management System API is running' });
+});
+
+app.get('/api', (req, res) => {
+  res.json({ success: true, message: 'Ticket Management System API is running' });
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ success: true, message: 'Server is running', timestamp: new Date() });
 });
