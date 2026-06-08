@@ -1,23 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
-/**
- * CONCEPT: JWT Authentication Middleware
- * 
- * JWT (JSON Web Token) is a stateless authentication method:
- * 1. User logs in and receives a token
- * 2. Token contains encoded user information
- * 3. Client sends token in every protected request
- * 4. Server verifies token signature without hitting database
- * 
- * Process:
- * 1. Extract token from Authorization header
- * 2. Verify token signature using JWT_SECRET
- * 3. Decode token to get user ID
- * 4. Fetch full user details from database
- * 5. Attach user to request object for use in controllers
- * 6. Continue to next middleware/route handler
- */
+// Authenticates incoming requests using the Authorization header's Bearer JWT.
 
 const authMiddleware = async (req, res, next) => {
   try {

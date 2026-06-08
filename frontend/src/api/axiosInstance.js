@@ -1,16 +1,6 @@
 import axios from 'axios';
 
-/**
- * Axios Instance
- *
- * Centralised HTTP client used by all API modules.
- *
- * Features:
- *  - Base URL from environment variable
- *  - Request interceptor: attaches JWT from localStorage automatically
- *  - Response interceptor: extracts `data` from the ApiResponse envelope,
- *    converts error messages to plain strings for Redux slices
- */
+// Centralized Axios client with JWT headers injection and response unwrapping interceptors.
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,

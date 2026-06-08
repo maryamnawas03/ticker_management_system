@@ -1,19 +1,4 @@
-/**
- * CONCEPT: Global Error Handling Middleware
- * 
- * Express middleware that runs when an error is passed to next(error)
- * or when we throw an error in a controller.
- * 
- * Middleware signature: (err, req, res, next)
- * The 4 parameters tell Express this is an error handler.
- * 
- * This middleware:
- * 1. Catches all errors from controllers
- * 2. Formats them consistently
- * 3. Returns appropriate status codes
- * 4. Logs errors for debugging
- * 5. Never exposes sensitive error details to frontend
- */
+// Global error handler that normalizes Database and validation errors.
 
 const errorMiddleware = (err, req, res, next) => {
   const statusCode = err.statusCode || 500;

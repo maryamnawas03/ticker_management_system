@@ -1,15 +1,4 @@
-/**
- * Validate Middleware
- *
- * A lightweight, dependency-free request body validator.
- *
- * Usage:
- *   validateBody(['name', 'email', 'password'])
- *
- * Returns a middleware that checks all required fields are present
- * and non-empty. Responds with 400 and a descriptive message if any
- * field is missing.
- */
+// Verifies that required fields are present and non-empty in the request body.
 
 const validateBody = (requiredFields) => {
   return (req, res, next) => {

@@ -1,27 +1,6 @@
 import mongoose from 'mongoose';
 
-/**
- * CONCEPT: MongoDB Ticket Schema
- * 
- * This schema defines the structure of support tickets.
- * It tracks:
- * 1. Ticket details (title, description, category, priority)
- * 2. Status lifecycle (Open → In Progress → Resolved → Closed)
- * 3. Assignment (which agent handles it)
- * 4. Comments (conversation thread)
- * 5. Status history (audit trail of all changes)
- * 
- * References (ObjectId Foreign Keys):
- * - createdBy: User ObjectId (who created)
- * - assignedTo: User ObjectId (which agent)
- * - comments[].user: User ObjectId (who commented)
- * - statusHistory[].changedBy: User ObjectId (who changed)
- * 
- * Key Design Pattern: Embedding vs Referencing
- * - Comments and statusHistory are EMBEDDED (within ticket)
- * - User references are REFERENCED (linked via ObjectId)
- * - This balances query performance with data normalization
- */
+// Ticket schema definition representing support requests, status lifecycles, assignments, and nested conversations.
 
 const ticketSchema = new mongoose.Schema(
   {

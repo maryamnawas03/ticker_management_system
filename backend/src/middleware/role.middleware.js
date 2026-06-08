@@ -1,11 +1,4 @@
-/**
- * CONCEPT: Role-Based Access Control (RBAC)
- * 
- * After authentication (user is verified), we need authorization (user has permission).
- * This middleware checks if user's role can access the route.
- * 
- * Usage: router.get('/admin-only', roleMiddleware('Admin'), controller)
- */
+// Middleware checking if the authenticated user's role matches allowed route scopes.
 
 const roleMiddleware = (allowedRoles) => {
   return (req, res, next) => {

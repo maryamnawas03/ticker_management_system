@@ -1,25 +1,4 @@
-/**
- * CONCEPT: Auto-Generated Ticket Numbering System
- * 
- * Problem: Need unique, human-readable identifiers like TKT-0001, TKT-0002
- * 
- * Solution: Generate based on highest existing ticket number
- * 
- * How it works:
- * 1. Query database for latest ticket sorted by creation date
- * 2. Extract numeric part from ticketNumber field
- * 3. Increment by 1
- * 4. Format as TKT-XXXX with leading zeros
- * 5. If no tickets exist, start from TKT-0001
- * 
- * Example sequence:
- * First ticket: TKT-0001
- * Second ticket: TKT-0002
- * Hundredth ticket: TKT-0100
- * Thousandth ticket: TKT-1000
- * 
- * This is called before creating a new ticket in the database
- */
+// Generates a sequential, human-readable, zero-padded ticket number (e.g. TKT-0001).
 
 import Ticket from '../models/Ticket.js';
 

@@ -1,23 +1,6 @@
 import mongoose from 'mongoose';
 
-/**
- * CONCEPT: MongoDB Connection Setup
- * 
- * MongoDB is a NoSQL database that stores data in JSON-like documents.
- * Mongoose is an ODM (Object Data Modeling) library that provides:
- * - Schema validation
- * - Type casting
- * - Relationship management
- * - Middleware hooks
- * 
- * How it works:
- * 1. mongoose.connect() establishes connection to MongoDB URI
- * 2. Handles connection errors with try-catch
- * 3. Returns connection object on success
- * 4. Exits process on failure (prevents silent failures)
- * 
- * Environment variables keep sensitive data secure
- */
+// MongoDB database connection setup with serverless container state caching.
 
 const connectDB = async () => {
   try {

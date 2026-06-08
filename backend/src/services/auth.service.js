@@ -1,13 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
-/**
- * CONCEPT: Service Layer
- * 
- * Services contain business logic separated from routes.
- * Controllers call services, services interact with database.
- * This keeps code organized and reusable.
- */
+// Business logic for registering users, handling authentication, and generating secure session tokens.
 
 class AuthService {
   static generateToken(userId) {

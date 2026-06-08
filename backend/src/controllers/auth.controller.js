@@ -1,15 +1,7 @@
 import AuthService from '../services/auth.service.js';
 import ApiResponse from '../utils/apiResponse.js';
 
-/**
- * CONCEPT: Controller Layer
- * 
- * Controllers handle:
- * 1. Extracting request data (req.body, req.params)
- * 2. Calling service functions
- * 3. Formatting response using ApiResponse
- * 4. Passing errors to error middleware
- */
+// Router controllers for authentication, registration, and user session handshakes.
 
 class AuthController {
   static async register(req, res, next) {
