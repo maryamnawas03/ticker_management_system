@@ -289,22 +289,7 @@ npm run preview      # Preview build
 - Verify menu visibility based on role
 - Test protected routes
 
-## 📦 Deployment
 
-### Frontend Deployment (Vercel/Netlify)
-1. Push code to GitHub
-2. Connect repository to Vercel/Netlify
-3. Set environment variables
-4. Deploy
-
-### Backend Deployment (Render/Railway)
-1. Push code to GitHub
-2. Connect repository to Render/Railway
-3. Set environment variables
-4. Deploy
-
-### Database (MongoDB Atlas)
-Already hosted - just update connection string in production
 
 ## 📋 Project Milestones Completion Status
 
@@ -349,36 +334,92 @@ Already hosted - just update connection string in production
 
 ---
 
-## 🚀 Deployment Instructions
+## 🚀 Vercel Deployment Guide
 
-### 📦 Backend Deployment (Render / Railway)
-1. **Repository Setup:** Push the repository to GitHub.
-2. **Web Service Setup:** Create a new Web Service on Render, linking your GitHub repository.
-3. **Root Directory:** Set the Root Directory to `backend`.
-4. **Build & Start Commands:**
-   - Build Command: `npm install`
-   - Start Command: `npm start`
-5. **Environment Variables:** Define the following variables:
-   - `MONGO_URI`: Your MongoDB Atlas connection string.
-   - `PORT`: `10000` (or leave default for Render).
-   - `NODE_ENV`: `production`
-   - `JWT_SECRET`: A secure, randomly generated string.
-   - `JWT_EXPIRY`: `7d`
-   - `FRONTEND_URL`: The URL of your deployed frontend (e.g., `https://your-app.vercel.app`).
+This guide explains how to deploy both the Express backend (as a serverless function) and the React frontend on **Vercel**. 
 
-### 📦 Frontend Deployment (Vercel)
-1. **Project Setup:** Link your repository to a new project in Vercel.
-2. **Build Configurations:**
-   - Framework Preset: `Other` (or Vite if auto-detected).
-   - Root Directory: `frontend`
-   - Build Command: `npm run build`
-   - Output Directory: `dist`
-3. **Environment Variables:** Define the API url:
-   - `VITE_API_BASE_URL`: The URL of your deployed backend (e.g., `https://your-backend.onrender.com/api`).
-4. **Routing Support:** The provided `vercel.json` file handles rewrites to keep single-page navigation functional when users reload custom URLs.
+### 1. Backend Deployment (Vercel)
+
+> [!WARNING]
+> **CRITICAL STEP: ROOT DIRECTORY**
+> In Vercel, since this is a monorepo, you **MUST** change the **Root Directory** setting to `backend` during project creation. If you do not do this, Vercel will attempt to deploy the root folder as a static site, resulting in a **404 NOT_FOUND** error for all API paths.
+
+1. Go to your **Vercel Dashboard** and click **Add New** -> **Project**.
+2. Select your repository: `ticker_management_system` (or your repository name).
+3. In the project settings:
+   - **Project Name**: `ticketflow-backend` (or similar)
+   - **Framework Preset**: Select **Other**
+   - **Root Directory**: Select **`backend`**
+4. Expand the **Environment Variables** section and add these exact key-value pairs:
+   - **`MONGO_URI`**: `mongodb+srv://maryamnawas03_db_user:jtGgUzzD3d1RZmAt@cluster0.7tudo2p.mongodb.net/ticket_management?retryWrites=true&w=majority&appName=Cluster0`
+   - **`JWT_SECRET`**: `d2c88f7b7e63b655f4625b169527cf664de9f1a238e8888b56345ecb3eb946fc`
+   - **`JWT_EXPIRY`**: `7d`
+   - **`NODE_ENV`**: `production`
+   - **`FRONTEND_URL`**: `https://your-frontend-project.vercel.app` (You can update this later once your frontend is deployed)
+5. Click **Deploy**.
+6. Once deployed, copy your backend URL (e.g., `https://ticketflow-backend.vercel.app`).
+
+#### Troubleshooting a 404: NOT_FOUND Error on Deployment
+If your deployed URL shows a Vercel `404: NOT_FOUND` page:
+1. Go to your Vercel Dashboard, select your project (`ticketflow-backend`).
+2. Go to **Settings** -> **General**.
+3. Under **Root Directory**, make sure it is set to `backend` (if it was blank or `.`, click **Edit**, type `backend`, and click **Save**).
+4. Go to **Deployments**, click the three dots on the latest deployment, and click **Redeploy** (select "clean cache" if prompted).
+
+---
+
+### 2. Frontend Deployment (Vercel)
+
+1. Return to the Vercel Dashboard and click **Add New** -> **Project**.
+2. Select the same repository.
+3. In the project settings:
+   - **Project Name**: `ticketflow-frontend` (or similar)
+   - **Framework Preset**: Select **Vite** (Vercel will auto-detect Vite)
+   - **Root Directory**: Select **`frontend`**
+   - **Build & Development Settings**: Keep defaults (Build Command: `npm run build`, Output Directory: `dist`).
+4. Expand the **Environment Variables** section and add:
+   - `VITE_API_BASE_URL`: `https://your-backend-project.vercel.app/api` (Use your deployed backend URL from Step 1, appending `/api`)
+5. Click **Deploy**.
+
+---
+
+### 3. Finalise CORS Configuration
+
+To ensure secure cross-origin requests between your frontend and backend:
+1. Go to your **Vercel Backend Project** settings -> **Environment Variables**.
+2. Update the `FRONTEND_URL` environment variable value to match your actual deployed Vercel frontend URL (e.g. `https://ticketflow-frontend.vercel.app`).
+3. Redeploy your backend on Vercel to apply the updated origin.
+
+Your full-stack TicketFlow application is now fully deployed and accessible in production on Vercel!
+
+---
+
+## 💡 Not-So-Obvious Technical Details & Pro Tips
+
+Here are a few subtle, non-obvious engineering decisions and tricks implemented in this repository that make it robust and easy to deploy:
+
+### 1. Dynamic Wildcard CORS for Vercel Preview Deployments
+- **The Problem:** In Vercel, every time you push to a git branch, Vercel spawns a new frontend URL (e.g. `ticketflow-frontend-git-somebranch-username.vercel.app`). Hardcoding `FRONTEND_URL` in the backend CORS setting would block these preview links from connecting.
+- **The Solution:** The backend's CORS policy in `app.js` is configured with a dynamic regular expression:
+  ```javascript
+  /^https:\/\/ticketflow-.*\.vercel\.app$/
+  ```
+  This automatically allows cross-origin requests from **any** preview branch domain generated for this project on Vercel.
+
+### 2. Vite Environment Variables are Build-Time Baked
+- **The Problem:** Changing a Vite environment variable (like `VITE_API_BASE_URL`) in the Vercel dashboard will **not** take effect immediately in your browser because static React assets are built once.
+- **The Solution:** The frontend project **must be redeployed** in Vercel to rebuild and inject the updated API url directly into the production JS bundle.
+
+### 3. Serverless DB Connection Pooling Guard
+- **The Problem:** In serverless environments (like Vercel functions), Node.js instances spin up and down constantly. Opening a new database connection on every request would quickly exhaust MongoDB's connection pool.
+- **The Solution:** Inside `db.js`, we query Mongoose's state before creating a connection:
+  ```javascript
+  if (mongoose.connection.readyState >= 1) return mongoose.connection;
+  ```
+  This reuses the existing active connection database socket across serverless invocations.
 
 ---
 
 **Status**: Project Completed ✅
-**Last Updated**: June 6, 2026
+**Last Updated**: June 8, 2026
 
