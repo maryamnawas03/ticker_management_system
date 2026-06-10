@@ -1,6 +1,5 @@
 import api from './axiosInstance';
 
-// Stub — full implementation on Day 3
 export const getTicketsRequest = (params) =>
   api.get('/tickets', { params });
 

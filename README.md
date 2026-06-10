@@ -49,7 +49,7 @@ This is a comprehensive ticket management system demonstrating:
 - **Redux Toolkit** - State management
 - **React Router** - Navigation
 - **Axios** - HTTP client
-- **Tailwind CSS** - Styling
+- **Vanilla CSS** - Styling (custom design system in index.css)
 - **Vite** - Build tool
 
 ## 📁 Project Structure
@@ -139,10 +139,12 @@ ticket-management-system/
 
 ### Users (Admin only)
 - `GET /api/users` - Get all users
+- `POST /api/users` - Create new user
 - `GET /api/users/agents` - Get all agents
 - `GET /api/users/:id` - Get specific user
 - `PATCH /api/users/:id/role` - Update user role
 - `PATCH /api/users/:id/status` - Update user status
+- `DELETE /api/users/:id` - Delete user
 
 ### Tickets
 - `POST /api/tickets` - Create ticket
