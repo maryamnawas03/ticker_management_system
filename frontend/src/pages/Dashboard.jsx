@@ -62,13 +62,14 @@ const Dashboard = () => {
     { name: 'Closed', value: counts.closed, color: '#64748B' },
   ];
 
-  let accumulatedLength = 0;
+  let accumulatedAngle = -90;
   const donutSegments = statuses.map((status) => {
     const percentage = donutTotal > 0 ? (status.value / donutTotal) * 100 : 0;
     const length = donutTotal > 0 ? (status.value / donutTotal) * circumference : 0;
-    const offset = circumference - accumulatedLength;
-    accumulatedLength += length;
-    return { ...status, percentage, length, offset };
+    const angle = donutTotal > 0 ? (status.value / donutTotal) * 360 : 0;
+    const rotateAngle = accumulatedAngle;
+    accumulatedAngle += angle;
+    return { ...status, percentage, length, rotateAngle };
   });
 
   const priorityTotal = (counts.low ?? 0) + (counts.medium ?? 0) + (counts.high ?? 0) + (counts.urgent ?? 0);
@@ -172,7 +173,8 @@ const Dashboard = () => {
                             className={`donut-segment ${hoveredIndex === idx ? 'active' : ''}`}
                             stroke={seg.color}
                             strokeDasharray={`${seg.length} ${circumference}`}
-                            strokeDashoffset={seg.offset}
+                            strokeDashoffset={0}
+                            transform={`rotate(${seg.rotateAngle}, 60, 60)`}
                             onMouseEnter={() => setHoveredIndex(idx)}
                             onMouseLeave={() => setHoveredIndex(null)}
                           />
