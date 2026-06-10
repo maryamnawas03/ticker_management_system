@@ -331,15 +331,7 @@ class TicketService {
 
     ticket.assignedTo = agentId;
     
-    // Automatically transition to "In Progress" if assigned to an agent and currently "Open"
-    if (agentId && ticket.status === 'Open') {
-      ticket.status = 'In Progress';
-      ticket.statusHistory.push({
-        status: 'In Progress',
-        changedBy: user._id,
-        changedAt: new Date()
-      });
-    }
+    // Do not automatically transition status when assigning an agent as per user request.
 
     await ticket.save();
     return this.getTicketById(ticket._id, user);

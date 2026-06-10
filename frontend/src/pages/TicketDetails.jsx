@@ -546,7 +546,7 @@ const TicketDetails = () => {
                   ))}
                 </select>
                 <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                  Assigning an agent automatically transitions an Open ticket to In Progress.
+                  Assigning an agent will not change the ticket status.
                 </p>
               </div>
             ) : (
