@@ -49,7 +49,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       {/* Brand */}
       <div className="sidebar-brand" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px 20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span className="material-icons brand-icon" style={{ color: '#f59e0b', fontSize: 24 }}>bolt</span>
+          <span className="material-icons brand-icon" style={{ color: 'var(--accent-light)', fontSize: 24 }}>bolt</span>
           <span className="brand-name">TicketFlow</span>
         </div>
         <button
