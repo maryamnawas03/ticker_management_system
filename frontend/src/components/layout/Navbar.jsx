@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux';
+import { useTheme } from '../../context/ThemeContext';
 
 /**
  * Navbar — Top bar showing current page title and user info
@@ -8,6 +9,7 @@ import { useSelector } from 'react-redux';
  */
 const Navbar = ({ title, onMenuClick }) => {
   const { user } = useSelector((state) => state.auth);
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <header className="navbar">
@@ -23,7 +25,17 @@ const Navbar = ({ title, onMenuClick }) => {
           <h1>{title || 'Dashboard'}</h1>
         </div>
       </div>
-      <div className="navbar-right">
+      <div className="navbar-right" style={{ gap: 16 }}>
+        <button
+          onClick={toggleTheme}
+          className="theme-toggle-btn"
+          title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          aria-label="Toggle theme"
+        >
+          <span className="material-icons">
+            {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+          </span>
+        </button>
         <div className="navbar-user">
           <div className="navbar-avatar">
             {user?.name?.charAt(0)?.toUpperCase() || 'U'}

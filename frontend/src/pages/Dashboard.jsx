@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchDashboardStats } from '../features/dashboard/dashboardSlice';
 import Loader from '../components/common/Loader';
@@ -33,10 +33,20 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { stats, isLoading, error } = useSelector((state) => state.dashboard);
+  
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [animateBars, setAnimateBars] = useState(false);
 
   useEffect(() => {
     dispatch(fetchDashboardStats());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (stats) {
+      const timer = setTimeout(() => setAnimateBars(true), 150);
+      return () => clearTimeout(timer);
+    }
+  }, [stats]);
 
   const counts = stats || {
     total: 0,
@@ -44,8 +54,37 @@ const Dashboard = () => {
     inProgress: 0,
     resolved: 0,
     closed: 0,
+    low: 0,
+    medium: 0,
+    high: 0,
     urgent: 0,
   };
+
+  const donutTotal = counts.open + counts.inProgress + counts.resolved + counts.closed;
+  const circumference = 314.16;
+  const statuses = [
+    { name: 'Open', value: counts.open, color: '#3B82F6' },
+    { name: 'In Progress', value: counts.inProgress, color: '#F59E0B' },
+    { name: 'Resolved', value: counts.resolved, color: '#22C55E' },
+    { name: 'Closed', value: counts.closed, color: '#64748B' },
+  ];
+
+  let accumulatedLength = 0;
+  const donutSegments = statuses.map((status) => {
+    const percentage = donutTotal > 0 ? (status.value / donutTotal) * 100 : 0;
+    const length = donutTotal > 0 ? (status.value / donutTotal) * circumference : 0;
+    const offset = circumference - accumulatedLength;
+    accumulatedLength += length;
+    return { ...status, percentage, length, offset };
+  });
+
+  const priorityTotal = (counts.low ?? 0) + (counts.medium ?? 0) + (counts.high ?? 0) + (counts.urgent ?? 0);
+  const priorities = [
+    { key: 'low', label: 'Low', count: counts.low ?? 0, glowClass: 'priority-glow-low' },
+    { key: 'medium', label: 'Medium', count: counts.medium ?? 0, glowClass: 'priority-glow-medium' },
+    { key: 'high', label: 'High', count: counts.high ?? 0, glowClass: 'priority-glow-high' },
+    { key: 'urgent', label: 'Urgent', count: counts.urgent ?? 0, glowClass: 'priority-glow-urgent' },
+  ];
 
   return (
     <div className="dashboard-page">
@@ -162,6 +201,116 @@ const Dashboard = () => {
                 </p>
                 <p className="stat-label">Regular Clients</p>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Charts Grid */}
+      {!isLoading && (
+        <div className="dashboard-charts-grid">
+          {/* Status Distribution Donut */}
+          <div className="chart-card">
+            <h3 className="chart-title">Ticket Status Distribution</h3>
+            <div className="donut-container">
+              <div className="donut-chart-wrapper">
+                <svg className="donut-svg" viewBox="0 0 120 120">
+                  {donutTotal === 0 ? (
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="50"
+                      className="donut-ring"
+                    />
+                  ) : (
+                    <>
+                      <circle
+                        cx="60"
+                        cy="60"
+                        r="50"
+                        className="donut-ring"
+                      />
+                      {donutSegments.map((seg, idx) => (
+                        seg.value > 0 && (
+                          <circle
+                            key={seg.name}
+                            cx="60"
+                            cy="60"
+                            r="50"
+                            className={`donut-segment ${hoveredIndex === idx ? 'active' : ''}`}
+                            stroke={seg.color}
+                            strokeDasharray={`${seg.length} ${circumference}`}
+                            strokeDashoffset={seg.offset}
+                            onMouseEnter={() => setHoveredIndex(idx)}
+                            onMouseLeave={() => setHoveredIndex(null)}
+                          />
+                        )
+                      ))}
+                    </>
+                  )}
+                </svg>
+                <div className="donut-center-text">
+                  {hoveredIndex !== null ? (
+                    <>
+                      <span className="donut-center-label">{donutSegments[hoveredIndex].name}</span>
+                      <span className="donut-center-value">{donutSegments[hoveredIndex].value}</span>
+                      <span className="donut-center-percent">
+                        {donutSegments[hoveredIndex].percentage.toFixed(1)}%
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="donut-center-label">Active</span>
+                      <span className="donut-center-value">{donutTotal}</span>
+                      <span className="donut-center-percent">Tickets</span>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="donut-legend">
+                {donutSegments.map((seg, idx) => (
+                  <div
+                    key={seg.name}
+                    className={`donut-legend-item ${hoveredIndex === idx ? 'active' : ''}`}
+                    onMouseEnter={() => setHoveredIndex(idx)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                  >
+                    <div className="donut-legend-label">
+                      <span className="donut-legend-color" style={{ background: seg.color }}></span>
+                      <span>{seg.name}</span>
+                    </div>
+                    <span className="donut-legend-value">{seg.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Priority Distribution Bar Chart */}
+          <div className="chart-card">
+            <h3 className="chart-title">Priority Distribution</h3>
+            <div className="priority-bars-wrapper">
+              {priorities.map((item) => {
+                const pct = priorityTotal > 0 ? (item.count / priorityTotal) * 100 : 0;
+                return (
+                  <div key={item.key} className="priority-bar-item">
+                    <div className="priority-bar-header">
+                      <span className="priority-bar-label">{item.label}</span>
+                      <span className="priority-bar-stats">
+                        <span className="priority-bar-count">{item.count}</span>
+                        {priorityTotal > 0 ? ` (${pct.toFixed(1)}%)` : ' (0%)'}
+                      </span>
+                    </div>
+                    <div className="priority-bar-track">
+                      <div
+                        className={`priority-bar-fill ${item.glowClass}`}
+                        style={{ width: animateBars ? `${pct}%` : '0%' }}
+                      ></div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

@@ -17,12 +17,15 @@ class DashboardService {
       filter.assignedTo = user._id;
     }
 
-    const [total, open, inProgress, resolved, closed, urgent] = await Promise.all([
+    const [total, open, inProgress, resolved, closed, low, medium, high, urgent] = await Promise.all([
       Ticket.countDocuments(filter),
       Ticket.countDocuments({ ...filter, status: 'Open' }),
       Ticket.countDocuments({ ...filter, status: 'In Progress' }),
       Ticket.countDocuments({ ...filter, status: 'Resolved' }),
       Ticket.countDocuments({ ...filter, status: 'Closed' }),
+      Ticket.countDocuments({ ...filter, priority: 'Low' }),
+      Ticket.countDocuments({ ...filter, priority: 'Medium' }),
+      Ticket.countDocuments({ ...filter, priority: 'High' }),
       Ticket.countDocuments({ ...filter, priority: 'Urgent' })
     ]);
 
@@ -43,6 +46,9 @@ class DashboardService {
       inProgress, 
       resolved, 
       closed, 
+      low,
+      medium,
+      high,
       urgent,
       ...(userStats && { userStats })
     };
