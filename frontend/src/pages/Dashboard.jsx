@@ -254,7 +254,7 @@ const Dashboard = () => {
       <div className="dashboard-actions">
         <h3 className="actions-title">Quick Actions</h3>
         <div className="actions-grid">
-          {user?.role !== 'Admin' && (
+          {user?.role === 'User' && (
             <a href="/tickets/new" className="action-card">
               <span className="material-icons action-icon">add</span>
               <span>Create Ticket</span>
