@@ -116,16 +116,6 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Test credentials hint */}
-        <div className="auth-hint">
-          <p className="hint-title">Test credentials</p>
-          <div className="hint-grid">
-            <span>Admin:</span><span>admin@test.com / Admin@123</span>
-            <span>Agent:</span><span>agent@test.com / Agent@123</span>
-            <span>User:</span><span>user@test.com / User@123</span>
-          </div>
-        </div>
-
         <p className="auth-footer-text">
           Don&apos;t have an account?{' '}
           <Link to="/register" className="auth-link">Create one</Link>

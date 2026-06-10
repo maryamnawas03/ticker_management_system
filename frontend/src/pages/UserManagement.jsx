@@ -146,6 +146,18 @@ const UserManagement = () => {
     });
   };
 
+  const handleOpenModal = () => {
+    setValidationError('');
+    setNewUserData({ name: '', email: '', password: '', role: 'User' });
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setValidationError('');
+    setNewUserData({ name: '', email: '', password: '', role: 'User' });
+  };
+
   const inputStyle = { background: 'var(--bg-raised)' };
 
   return (
@@ -167,10 +179,7 @@ const UserManagement = () => {
         </div>
         <div style={{ display: 'flex', gap: 12 }}>
           <button
-            onClick={() => {
-              setValidationError('');
-              setIsModalOpen(true);
-            }}
+            onClick={handleOpenModal}
             className="auth-btn"
             style={{ width: 'auto', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 6, marginTop: 0 }}
           >
@@ -573,7 +582,7 @@ const UserManagement = () => {
             justifyContent: 'center',
             zIndex: 1000,
           }}
-          onClick={() => setIsModalOpen(false)}
+          onClick={handleCloseModal}
         >
           <div
             style={{
@@ -601,6 +610,7 @@ const UserManagement = () => {
                 <input
                   id="new-name"
                   type="text"
+                  autoComplete="off"
                   className="field-input"
                   style={{ background: 'var(--bg-raised)' }}
                   placeholder="John Doe"
@@ -616,6 +626,7 @@ const UserManagement = () => {
                 <input
                   id="new-email"
                   type="email"
+                  autoComplete="new-email"
                   className="field-input"
                   style={{ background: 'var(--bg-raised)' }}
                   placeholder="john@example.com"
@@ -631,6 +642,7 @@ const UserManagement = () => {
                 <input
                   id="new-password"
                   type="password"
+                  autoComplete="new-password"
                   className="field-input"
                   style={{ background: 'var(--bg-raised)' }}
                   placeholder="••••••••"
@@ -662,7 +674,7 @@ const UserManagement = () => {
                   type="button"
                   className="logout-btn"
                   style={{ width: 'auto', padding: '10px 20px' }}
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={handleCloseModal}
                   disabled={createLoading}
                 >
                   Cancel
