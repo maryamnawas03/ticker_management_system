@@ -155,6 +155,7 @@ ticket-management-system/
 - `PATCH /api/tickets/:id/status` - Update ticket status
 - `PATCH /api/tickets/:id/assign` - Assign ticket to agent
 - `POST /api/tickets/:id/comments` - Add comment
+- `DELETE /api/tickets/:id/comments/:commentId` - Delete comment
 
 ### Dashboard
 - `GET /api/dashboard/stats` - Get statistics (role-based)
@@ -243,25 +244,14 @@ Application will run on `http://localhost:5173`
 
 ## 📝 Test Credentials
 
-After seeding test users, use these credentials:
+Admin:
+admin@test.com / Admin@123
 
-### Admin
-```
-Email: admin@test.com
-Password: Admin@123
-```
+Agent:
+agent@test.com / Agent@123
 
-### Agent
-```
-Email: agent@test.com
-Password: Agent@123
-```
-
-### User
-```
-Email: user@test.com
-Password: User@123
-```
+User:
+user@test.com / User@123
 
 ## 🔄 Development Workflow
 
@@ -422,6 +412,7 @@ Here are a few subtle, non-obvious engineering decisions and tricks implemented 
 
 ---
 
+**Developer**: Maryam Nawas
 **Status**: Project Completed ✅
-**Last Updated**: June 8, 2026
+**Last Updated**: June 10, 2026
 
