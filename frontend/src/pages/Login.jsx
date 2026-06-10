@@ -5,6 +5,8 @@ import { loginUser, clearError } from '../features/auth/authSlice';
 import ErrorMessage from '../components/common/ErrorMessage';
 import Loader from '../components/common/Loader';
 
+import { useToast } from '../context/ToastContext';
+
 /**
  * Login Page
  *
@@ -16,6 +18,7 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isLoading, error, token } = useSelector((state) => state.auth);
+  const { addToast } = useToast();
 
   const [form, setForm] = useState({ email: '', password: '' });
   const [fieldErrors, setFieldErrors] = useState({});
@@ -50,7 +53,10 @@ const Login = () => {
     if (!validate()) return;
     const result = await dispatch(loginUser(form));
     if (loginUser.fulfilled.match(result)) {
+      addToast(`Welcome back, ${result.payload.user?.name || 'User'}!`, 'success');
       navigate('/dashboard', { replace: true });
+    } else if (loginUser.rejected.match(result)) {
+      addToast(result.payload || 'Invalid email or password', 'error');
     }
   };
 

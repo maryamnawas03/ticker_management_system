@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { fetchUsers, updateUserRole, updateUserStatus, createUser, deleteUser } from '../features/users/userSlice';
 import Loader from '../components/common/Loader';
 import ErrorMessage from '../components/common/ErrorMessage';
+import { useToast } from '../context/ToastContext';
 
 const UserManagement = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { addToast } = useToast();
 
   const { user: currentUser } = useSelector((state) => state.auth);
   const { users, pagination, isLoading, error } = useSelector((state) => state.users);
@@ -62,6 +64,7 @@ const UserManagement = () => {
     }
 
     setCreateLoading(true);
+    const nameToCreate = newUserData.name;
     dispatch(createUser(newUserData))
       .unwrap()
       .then(() => {
@@ -70,9 +73,11 @@ const UserManagement = () => {
         // Reload list to include new user
         dispatch(fetchUsers({ page: 1, limit: 10 }));
         setPage(1);
+        addToast(`User "${nameToCreate}" created successfully`, 'success');
       })
       .catch((err) => {
         setValidationError(err || 'Failed to create user');
+        addToast(err || 'Failed to create user', 'error');
       })
       .finally(() => {
         setCreateLoading(false);
@@ -102,39 +107,54 @@ const UserManagement = () => {
   };
 
   const handleRoleChange = (userId, newRole) => {
+    const targetUser = users.find((u) => u._id === userId);
+    const targetName = targetUser ? targetUser.name : 'User';
     if (window.confirm(`Are you sure you want to change this user's role to ${newRole}?`)) {
       dispatch(updateUserRole({ id: userId, role: newRole }))
         .unwrap()
         .then(() => {
+          addToast(`Role for ${targetName} changed to ${newRole}`, 'success');
           // If the admin changes an agent's role, we may need to reload the current page.
           dispatch(fetchUsers({ page, limit: 10, search, role, status }));
         })
-        .catch(() => {});
+        .catch((err) => {
+          addToast(err || 'Failed to update user role', 'error');
+        });
     }
   };
 
   const handleStatusToggle = (userId, currentStatus) => {
     const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
     const actionText = newStatus === 'Active' ? 'activate' : 'deactivate';
+    const targetUser = users.find((u) => u._id === userId);
+    const targetName = targetUser ? targetUser.name : 'User';
 
     if (window.confirm(`Are you sure you want to ${actionText} this user's account?`)) {
       dispatch(updateUserStatus({ id: userId, status: newStatus }))
         .unwrap()
         .then(() => {
+          addToast(`Account for ${targetName} is now ${newStatus}`, 'success');
           dispatch(fetchUsers({ page, limit: 10, search, role, status }));
         })
-        .catch(() => {});
+        .catch((err) => {
+          addToast(err || `Failed to ${actionText} user account`, 'error');
+        });
     }
   };
 
   const handleDeleteUser = (userId) => {
+    const targetUser = users.find((u) => u._id === userId);
+    const targetName = targetUser ? targetUser.name : 'User';
     if (window.confirm("Are you sure you want to permanently delete this user's account? This action cannot be undone.")) {
       dispatch(deleteUser(userId))
         .unwrap()
         .then(() => {
+          addToast(`User ${targetName} deleted permanently`, 'success');
           dispatch(fetchUsers({ page, limit: 10, search, role, status }));
         })
-        .catch(() => {});
+        .catch((err) => {
+          addToast(err || 'Failed to delete user account', 'error');
+        });
     }
   };
 

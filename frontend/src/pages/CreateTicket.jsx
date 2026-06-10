@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { createTicket } from '../features/tickets/ticketSlice';
 import ErrorMessage from '../components/common/ErrorMessage';
+import { useToast } from '../context/ToastContext';
 
 const CATEGORIES = ['Bug', 'Feature Request', 'Technical Issue', 'Payment Issue', 'Account Issue', 'Other'];
 const PRIORITIES = ['Low', 'Medium', 'High', 'Urgent'];
@@ -11,6 +12,7 @@ const CreateTicket = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isLoading, error } = useSelector((state) => state.tickets);
+  const { addToast } = useToast();
 
   const [formData, setFormData] = useState({
     title:       '',
@@ -46,8 +48,13 @@ const CreateTicket = () => {
       priority:    formData.priority,
     }))
       .unwrap()
-      .then(() => navigate('/tickets'))
-      .catch(() => {});
+      .then(() => {
+        addToast(`Ticket "${formData.title}" created successfully!`, 'success');
+        navigate('/tickets');
+      })
+      .catch((err) => {
+        addToast(err || 'Failed to create ticket', 'error');
+      });
   };
 
   const inputStyle = { background: 'var(--bg-raised)' };

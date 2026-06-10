@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 import {
   fetchTicketById,
   updateTicketStatus,
@@ -20,6 +21,7 @@ const TicketDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { addToast } = useToast();
   
   const { user } = useSelector((state) => state.auth);
   const { ticket, isLoading, commentLoading, error } = useSelector((state) => state.tickets);
@@ -72,27 +74,37 @@ const TicketDetails = () => {
     setSaveLoading(true);
     try {
       const promises = [];
+      const successMessages = [];
+
       if (selectedStatus !== ticket.status) {
         promises.push(dispatch(updateTicketStatus({ id, status: selectedStatus })).unwrap());
+        successMessages.push(`Status updated to "${selectedStatus}"`);
       }
       if (user?.role === 'Admin' && selectedAgent !== (ticket.assignedTo?._id || '')) {
+        const agentName = agents.find((a) => a._id === selectedAgent)?.name || 'Unassigned';
         promises.push(dispatch(assignTicket({ id, agentId: selectedAgent || null })).unwrap());
+        successMessages.push(`Assigned to ${selectedAgent ? agentName : 'Unassigned'}`);
       }
       if (commentText.trim()) {
         promises.push(dispatch(addComment({ id, message: commentText })).unwrap());
+        successMessages.push('Comment posted successfully');
       }
+
       await Promise.all(promises);
       
       if (commentText.trim()) {
         setCommentText('');
       }
 
+      successMessages.forEach((msg) => addToast(msg, 'success'));
+
       if (shouldRedirect) {
         navigate('/tickets');
       } else {
         dispatch(fetchTicketById(id));
       }
-    } catch {
+    } catch (err) {
+      addToast(err || 'Failed to save changes', 'error');
       setSaveLoading(false);
     } finally {
       if (!shouldRedirect) {
@@ -113,7 +125,14 @@ const TicketDetails = () => {
 
   const handleDeleteComment = (commentId) => {
     if (window.confirm('Are you sure you want to delete this comment?')) {
-      dispatch(deleteComment({ id, commentId }));
+      dispatch(deleteComment({ id, commentId }))
+        .unwrap()
+        .then(() => {
+          addToast('Comment deleted successfully', 'success');
+        })
+        .catch((err) => {
+          addToast(err || 'Failed to delete comment', 'error');
+        });
     }
   };
 
@@ -122,7 +141,11 @@ const TicketDetails = () => {
       dispatch(deleteTicket(id))
         .unwrap()
         .then(() => {
+          addToast(`Ticket ${ticket?.ticketNumber || ''} deleted successfully`, 'success');
           navigate('/tickets');
+        })
+        .catch((err) => {
+          addToast(err || 'Failed to delete ticket', 'error');
         });
     }
   };

@@ -7,17 +7,21 @@ import PriorityBadge from '../components/common/PriorityBadge';
 import ErrorMessage from '../components/common/ErrorMessage';
 import Loader from '../components/common/Loader';
 
+import { useToast } from '../context/ToastContext';
+
 const TicketList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const { tickets, pagination, isLoading, error } = useSelector((state) => state.tickets);
+  const { addToast } = useToast();
 
   const handleDeleteTicket = (ticketId, ticketNumber) => {
     if (window.confirm(`Are you sure you want to permanently delete ticket ${ticketNumber}? This action cannot be undone.`)) {
       dispatch(deleteTicket(ticketId))
         .unwrap()
         .then(() => {
+          addToast(`Ticket ${ticketNumber} deleted successfully`, 'success');
           dispatch(fetchTickets({
             page,
             limit: 10,
@@ -29,7 +33,9 @@ const TicketList = () => {
             ...(category && { category })
           }));
         })
-        .catch(() => {});
+        .catch((err) => {
+          addToast(err || 'Failed to delete ticket', 'error');
+        });
     }
   };
 

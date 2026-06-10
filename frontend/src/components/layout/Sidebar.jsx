@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../features/auth/authSlice';
+import { useToast } from '../../context/ToastContext';
 
 /**
  * Sidebar — Role-Based Navigation
@@ -34,10 +35,12 @@ const Sidebar = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  const { addToast } = useToast();
   const navItems = navByRole[user?.role] || userNav;
 
   const handleLogout = () => {
     dispatch(logout());
+    addToast('Signed out successfully', 'info');
     navigate('/login');
   };
 

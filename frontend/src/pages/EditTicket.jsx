@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { fetchTicketById, updateTicket } from '../features/tickets/ticketSlice';
 import ErrorMessage from '../components/common/ErrorMessage';
 import Loader from '../components/common/Loader';
+import { useToast } from '../context/ToastContext';
 
 const CATEGORIES = ['Bug', 'Feature Request', 'Technical Issue', 'Payment Issue', 'Account Issue', 'Other'];
 const PRIORITIES = ['Low', 'Medium', 'High', 'Urgent'];
@@ -13,6 +14,7 @@ const EditTicket = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { ticket, isLoading, error } = useSelector((state) => state.tickets);
+  const { addToast } = useToast();
 
   const [formData, setFormData] = useState({
     title:       '',
@@ -70,8 +72,14 @@ const EditTicket = () => {
       },
     }))
       .unwrap()
-      .then(() => navigate('/tickets'))
-      .catch(() => setSaving(false));
+      .then(() => {
+        addToast('Ticket updated successfully!', 'success');
+        navigate('/tickets');
+      })
+      .catch((err) => {
+        addToast(err || 'Failed to update ticket', 'error');
+        setSaving(false);
+      });
   };
 
   /* ── Loading skeleton while ticket fetches ─────────────────────────── */

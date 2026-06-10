@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { registerUser, clearError } from '../features/auth/authSlice';
 import ErrorMessage from '../components/common/ErrorMessage';
 import Loader from '../components/common/Loader';
+import { useToast } from '../context/ToastContext';
 
 /**
  * Register Page
@@ -16,6 +17,7 @@ const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isLoading, error, token } = useSelector((state) => state.auth);
+  const { addToast } = useToast();
 
   const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' });
   const [fieldErrors, setFieldErrors] = useState({});
@@ -54,7 +56,10 @@ const Register = () => {
       password: form.password,
     }));
     if (registerUser.fulfilled.match(result)) {
+      addToast('Account created successfully!', 'success');
       navigate('/dashboard', { replace: true });
+    } else if (registerUser.rejected.match(result)) {
+      addToast(result.payload || 'Failed to create account', 'error');
     }
   };
 
