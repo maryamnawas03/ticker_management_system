@@ -158,6 +158,12 @@ const UserManagement = () => {
     setNewUserData({ name: '', email: '', password: '', role: 'User' });
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleCreateSubmit(e);
+    }
+  };
+
   const inputStyle = { background: 'var(--bg-raised)' };
 
   return (
@@ -604,11 +610,11 @@ const UserManagement = () => {
               <ErrorMessage message={validationError} style={{ marginBottom: 16 }} />
             )}
 
-            <form onSubmit={handleCreateSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div className="field-group">
-                <label className="field-label" htmlFor="new-name">Full Name</label>
+                <label className="field-label" htmlFor="create-user-full-name">Full Name</label>
                 <input
-                  id="new-name"
+                  id="create-user-full-name"
                   type="text"
                   autoComplete="off"
                   className="field-input"
@@ -616,15 +622,16 @@ const UserManagement = () => {
                   placeholder="John Doe"
                   value={newUserData.name}
                   onChange={(e) => setNewUserData((prev) => ({ ...prev, name: e.target.value }))}
+                  onKeyDown={handleKeyDown}
                   disabled={createLoading}
                   required
                 />
               </div>
 
               <div className="field-group">
-                <label className="field-label" htmlFor="new-email">Email Address</label>
+                <label className="field-label" htmlFor="create-user-email-address">Email Address</label>
                 <input
-                  id="new-email"
+                  id="create-user-email-address"
                   type="email"
                   autoComplete="new-email"
                   className="field-input"
@@ -632,15 +639,16 @@ const UserManagement = () => {
                   placeholder="john@example.com"
                   value={newUserData.email}
                   onChange={(e) => setNewUserData((prev) => ({ ...prev, email: e.target.value }))}
+                  onKeyDown={handleKeyDown}
                   disabled={createLoading}
                   required
                 />
               </div>
 
               <div className="field-group">
-                <label className="field-label" htmlFor="new-password">Password</label>
+                <label className="field-label" htmlFor="create-user-secret-password">Password</label>
                 <input
-                  id="new-password"
+                  id="create-user-secret-password"
                   type="password"
                   autoComplete="new-password"
                   className="field-input"
@@ -648,15 +656,16 @@ const UserManagement = () => {
                   placeholder="••••••••"
                   value={newUserData.password}
                   onChange={(e) => setNewUserData((prev) => ({ ...prev, password: e.target.value }))}
+                  onKeyDown={handleKeyDown}
                   disabled={createLoading}
                   required
                 />
               </div>
 
               <div className="field-group">
-                <label className="field-label" htmlFor="new-role">Role</label>
+                <label className="field-label" htmlFor="create-user-role-select">Role</label>
                 <select
-                  id="new-role"
+                  id="create-user-role-select"
                   className="field-input"
                   style={{ background: 'var(--bg-raised)' }}
                   value={newUserData.role}
@@ -680,7 +689,8 @@ const UserManagement = () => {
                   Cancel
                 </button>
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={handleCreateSubmit}
                   className="auth-btn"
                   style={{ width: 'auto', padding: '10px 24px', marginTop: 0 }}
                   disabled={createLoading}
@@ -688,7 +698,7 @@ const UserManagement = () => {
                   {createLoading ? 'Creating...' : 'Create User'}
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       )}
